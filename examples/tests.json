@@ -1,0 +1,16 @@
+[
+  {
+    "id": "TC-001",
+    "name": "Basic meeting notes",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "We shipped the auth fix today. Need Lena to check metrics tomorrow. Also auth fix shipped.",
+    "expected_behavior": "Produce a concise Markdown update that removes duplicated auth information and keeps Lena's action item.",
+    "evaluation_criteria": [
+      "Preserves the auth fix fact",
+      "Removes duplicated content",
+      "Includes Lena's action item",
+      "Uses Markdown bullets"
+    ]
+  }
+]
