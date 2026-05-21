@@ -148,6 +148,34 @@ Useful options:
 - `--self-check`: enable self-check regulators.
 - `--config`: load YAML configuration, with CLI options taking priority.
 
+## Python config
+
+You can describe the whole run in a Python file instead of passing long CLI commands.
+
+```powershell
+.\scripts\run-local.ps1 run --config examples/prompt_project.py
+```
+
+Inside the Python config, use `PROMPT_EVOLVE = {...}` with `task`, `prompt`, optional `tests`, and `settings`.
+
+```python
+PROMPT_EVOLVE = {
+    "task": {"text": "Describe what the final prompt must do."},
+    "prompt": {"text": "Paste your current prompt here."},
+    "settings": {
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "target_tests": 20,
+        "iterations": 2,
+        "candidates": 3,
+        "pass_k": 3,
+        "output": {"dir": "runs/my_prompt_project"},
+    },
+}
+```
+
+See `docs/python_config_guide.md` for a detailed guide.
+
 ## Формат task.md
 
 Markdown file describing the task and requirements.

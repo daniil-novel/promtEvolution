@@ -5,7 +5,13 @@ from typing import Optional
 
 import typer
 
-from .config import ConfigError, load_config, merge_cli_overrides, validate_runtime_config, write_default_config
+from .config import (
+    ConfigError,
+    load_scenario_config,
+    merge_cli_overrides,
+    validate_runtime_config,
+    write_default_config,
+)
 from .pipeline import evaluate_command, generate_tests_command, run_evolution
 
 app = typer.Typer(help="Prompt Evolution CLI")
@@ -25,7 +31,8 @@ def _prepare_config(
     self_check: Optional[bool],
     out: Optional[str],
 ):
-    config = load_config(config_path)
+    scenario = load_scenario_config(config_path)
+    config = scenario.app
     config = merge_cli_overrides(
         config,
         {
@@ -42,7 +49,7 @@ def _prepare_config(
         },
     )
     validate_runtime_config(config)
-    return config
+    return config, scenario.inputs
 
 
 def _handle_error(exc: Exception) -> None:
@@ -61,8 +68,8 @@ def init_config(
 
 @app.command()
 def generate_tests(
-    task: str = typer.Option(..., "--task", help="Task Markdown file."),
-    out: str = typer.Option(..., "--out", help="Output tests.json path."),
+    task: Optional[str] = typer.Option(None, "--task", help="Task Markdown file."),
+    out: Optional[str] = typer.Option(None, "--out", help="Output tests.json path."),
     provider: Optional[str] = typer.Option(None, "--provider"),
     model: Optional[str] = typer.Option(None, "--model"),
     target_tests: Optional[int] = typer.Option(None, "--target-tests"),
@@ -72,7 +79,7 @@ def generate_tests(
 ) -> None:
     """Generate test cases for a task."""
     try:
-        cfg = _prepare_config(
+        cfg, inputs = _prepare_config(
             config_path=config,
             provider=provider,
             model=model,
@@ -85,17 +92,24 @@ def generate_tests(
             self_check=self_check,
             out=None,
         )
-        tests = generate_tests_command(task, out, cfg)
+        output_path = out or str(Path(cfg.output.dir) / "tests.json")
+        tests = generate_tests_command(
+            task,
+            output_path,
+            cfg,
+            task_text=inputs.task_text,
+            config_task_path=inputs.task_file,
+        )
     except Exception as exc:
         _handle_error(exc)
-    typer.echo(f"Generated {len(tests)} test cases: {out}")
+    typer.echo(f"Generated {len(tests)} test cases: {output_path}")
 
 
 @app.command()
 def evaluate(
-    task: str = typer.Option(..., "--task", help="Task Markdown file."),
-    prompt: str = typer.Option(..., "--prompt", help="Prompt Markdown file."),
-    tests: str = typer.Option(..., "--tests", help="Tests JSON file."),
+    task: Optional[str] = typer.Option(None, "--task", help="Task Markdown file."),
+    prompt: Optional[str] = typer.Option(None, "--prompt", help="Prompt Markdown file."),
+    tests: Optional[str] = typer.Option(None, "--tests", help="Tests JSON file."),
     provider: Optional[str] = typer.Option(None, "--provider"),
     model: Optional[str] = typer.Option(None, "--model"),
     pass_k: Optional[int] = typer.Option(None, "--pass-k"),
@@ -106,7 +120,7 @@ def evaluate(
 ) -> None:
     """Evaluate one prompt against existing tests."""
     try:
-        cfg = _prepare_config(
+        cfg, inputs = _prepare_config(
             config_path=config,
             provider=provider,
             model=model,
@@ -119,7 +133,18 @@ def evaluate(
             self_check=self_check,
             out=out,
         )
-        payload = evaluate_command(task, prompt, tests, cfg)
+        payload = evaluate_command(
+            task,
+            prompt,
+            tests,
+            cfg,
+            task_text=inputs.task_text,
+            config_task_path=inputs.task_file,
+            prompt_text=inputs.prompt_text,
+            config_prompt_path=inputs.prompt_file,
+            tests_data=inputs.tests_data,
+            config_tests_path=inputs.tests_file,
+        )
     except Exception as exc:
         _handle_error(exc)
     metrics = payload["metrics"]
@@ -130,7 +155,7 @@ def evaluate(
 
 @app.command()
 def run(
-    task: str = typer.Option(..., "--task", help="Task Markdown file."),
+    task: Optional[str] = typer.Option(None, "--task", help="Task Markdown file."),
     prompt: Optional[str] = typer.Option(None, "--prompt", help="Baseline prompt Markdown file."),
     tests: Optional[str] = typer.Option(None, "--tests", help="Tests JSON file."),
     provider: Optional[str] = typer.Option(None, "--provider"),
@@ -147,7 +172,7 @@ def run(
 ) -> None:
     """Run the full SCOPE prompt evolution pipeline."""
     try:
-        cfg = _prepare_config(
+        cfg, inputs = _prepare_config(
             config_path=config,
             provider=provider,
             model=model,
@@ -162,8 +187,14 @@ def run(
         )
         payload = run_evolution(
             task_path=task,
+            task_text=inputs.task_text,
+            config_task_path=inputs.task_file,
             prompt_path=prompt,
+            prompt_text=inputs.prompt_text,
+            config_prompt_path=inputs.prompt_file,
             tests_path=tests,
+            tests_data=inputs.tests_data,
+            config_tests_path=inputs.tests_file,
             config=cfg,
             status=typer.echo,
         )

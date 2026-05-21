@@ -7,8 +7,10 @@ from prompt_evolve.config import (
     ConfigError,
     load_config,
     load_dotenv,
+    load_scenario_config,
     merge_cli_overrides,
     read_text_file,
+    scenario_from_dict,
     validate_runtime_config,
     write_default_config,
 )
@@ -62,3 +64,39 @@ def test_read_text_file_rejects_empty(tmp_path):
 def test_write_default_config(tmp_path):
     path = write_default_config(tmp_path / "prompt-evolve.yaml")
     assert Path(path).read_text(encoding="utf-8").startswith("provider:")
+
+
+def test_load_python_scenario_config(tmp_path):
+    path = tmp_path / "scenario.py"
+    path.write_text(
+        "PROMPT_EVOLVE = {\n"
+        "  'task': {'text': 'Task text'},\n"
+        "  'prompt': {'text': 'Prompt text'},\n"
+        "  'tests': {'cases': []},\n"
+        "  'settings': {'provider': 'mock', 'target_tests': 2, 'output': {'dir': 'runs/py'}}\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    scenario = load_scenario_config(path)
+    assert scenario.app.provider == "mock"
+    assert scenario.app.output.dir == "runs/py"
+    assert scenario.inputs.task_text == "Task text"
+    assert scenario.inputs.prompt_text == "Prompt text"
+    assert scenario.inputs.tests_data == []
+
+
+def test_python_config_requires_mapping(tmp_path):
+    path = tmp_path / "bad.py"
+    path.write_text("PROMPT_EVOLVE = []\n", encoding="utf-8")
+    with pytest.raises(ConfigError, match="must be a dict"):
+        load_scenario_config(path)
+
+
+def test_scenario_rejects_text_and_file():
+    with pytest.raises(ConfigError, match="either text or file"):
+        scenario_from_dict({"task": {"text": "x", "file": "task.md"}})
+
+
+def test_scenario_rejects_tests_cases_and_file():
+    with pytest.raises(ConfigError, match="either cases or file"):
+        scenario_from_dict({"tests": {"cases": [], "file": "tests.json"}})

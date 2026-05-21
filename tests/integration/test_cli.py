@@ -51,6 +51,26 @@ def test_run_task_only(tmp_path):
     assert (tmp_path / "run1" / "report.json").exists()
 
 
+def test_run_from_python_config(tmp_path):
+    config = tmp_path / "project.py"
+    config.write_text(
+        "PROMPT_EVOLVE = {\n"
+        "  'task': {'text': 'Task requirements'},\n"
+        "  'prompt': {'text': 'Prompt'},\n"
+        "  'tests': {'cases': [{\n"
+        "    'id': 'TC-001', 'name': 'Case', 'type': 'happy_path', 'priority': 'high',\n"
+        "    'input': 'Use Markdown', 'expected_behavior': 'Markdown output',\n"
+        "    'evaluation_criteria': ['Uses Markdown', 'Preserves facts']\n"
+        "  }]},\n"
+        f"  'settings': {{'provider': 'mock', 'target_tests': 1, 'iterations': 1, 'candidates': 1, 'pass_k': 1, 'output': {{'dir': r'{tmp_path / 'py-run'}'}}}}\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(app, ["run", "--config", str(config)])
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / "py-run" / "final_prompt.md").exists()
+
+
 def test_run_with_prompt_and_tests(tmp_path):
     task, prompt, tests = write_inputs(tmp_path)
     result = runner.invoke(
@@ -102,6 +122,21 @@ def test_generate_tests_command(tmp_path):
     assert len(json.loads(out.read_text(encoding="utf-8"))) == 4
 
 
+def test_generate_tests_from_python_config(tmp_path):
+    config = tmp_path / "project.py"
+    out = tmp_path / "generated.json"
+    config.write_text(
+        "PROMPT_EVOLVE = {\n"
+        "  'task': {'text': 'Task requirements'},\n"
+        "  'settings': {'provider': 'mock', 'target_tests': 3, 'output': {'dir': 'runs/x'}}\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(app, ["generate-tests", "--config", str(config), "--out", str(out)])
+    assert result.exit_code == 0, result.output
+    assert len(json.loads(out.read_text(encoding="utf-8"))) == 3
+
+
 def test_evaluate_command(tmp_path):
     task, prompt, tests = write_inputs(tmp_path)
     result = runner.invoke(
@@ -122,6 +157,26 @@ def test_evaluate_command(tmp_path):
     )
     assert result.exit_code == 0, result.output
     assert "Evaluation completed" in result.output
+
+
+def test_evaluate_from_python_config(tmp_path):
+    config = tmp_path / "project.py"
+    config.write_text(
+        "PROMPT_EVOLVE = {\n"
+        "  'task': {'text': 'Task requirements'},\n"
+        "  'prompt': {'text': 'Prompt'},\n"
+        "  'tests': {'cases': [{\n"
+        "    'id': 'TC-001', 'name': 'Case', 'type': 'happy_path', 'priority': 'high',\n"
+        "    'input': 'Use Markdown', 'expected_behavior': 'Markdown output',\n"
+        "    'evaluation_criteria': ['Uses Markdown', 'Preserves facts']\n"
+        "  }]},\n"
+        f"  'settings': {{'provider': 'mock', 'output': {{'dir': r'{tmp_path / 'py-eval'}'}}}}\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(app, ["evaluate", "--config", str(config)])
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / "py-eval" / "report.md").exists()
 
 
 def test_cli_validation_error(tmp_path):

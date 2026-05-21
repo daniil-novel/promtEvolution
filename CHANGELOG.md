@@ -4,6 +4,42 @@
 
 ### Что изменено
 
+- Добавлена поддержка Python scenario config через `PROMPT_EVOLVE = {...}`.
+- CLI-команды `run`, `generate-tests` и `evaluate` теперь могут брать task/prompt/tests из config-файла.
+- Добавлены пример `examples/prompt_project.py` и подробный guide `docs/python_config_guide.md`.
+
+### Для чего это нужно
+
+- Пользователь может описывать промпт, задачу, тесты и настройки в одном понятном Python-файле вместо длинных команд.
+
+### Почему это сделано именно так
+
+- Python config остаётся простым dict-форматом, а CLI-аргументы сохраняют приоритет для быстрых override.
+
+### Затронутые файлы
+
+- `prompt_evolve/config.py`
+- `prompt_evolve/cli.py`
+- `prompt_evolve/pipeline.py`
+- `examples/prompt_project.py`
+- `docs/python_config_guide.md`
+- `README.md`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+- Smoke-run через `.\scripts\run-local.ps1 run --config examples/prompt_project.py`.
+
+### Риски
+
+- Python config исполняется как локальный Python-файл, поэтому использовать нужно только доверенные config-файлы.
+
+## 2026-05-21 — Commit: 324753e
+
+### Что изменено
+
 - Добавлены локальные setup/launcher scripts для запуска без Docker и без зависимости от глобального `prompt-evolve.exe`.
 - README дополнен обходом Windows/pip ошибки `Failed to write executable ... .deleteme`.
 - Placeholder-секреты `PASTE_*` и `your_*` больше не считаются валидной конфигурацией provider.

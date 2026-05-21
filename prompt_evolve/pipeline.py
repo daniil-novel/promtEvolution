@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .config import AppConfig, read_text_file
+from .config import AppConfig, ConfigError, read_text_file
 from .evaluator import run_candidate
 from .metrics import build_metrics, pass_at_1
 from .models import NoopSystemMetricsCollector, PromptRunResult
@@ -22,11 +22,58 @@ from .report import (
     write_run_log,
 )
 from .scope import generate_guidelines, self_check_guidelines, update_prompt_with_guidelines
-from .testcases import ensure_target_testcases, load_testcases, save_testcases, self_check_testcases
+from .testcases import (
+    ensure_target_testcases,
+    load_testcases,
+    save_testcases,
+    self_check_testcases,
+    validate_testcases,
+)
 
 
-def generate_tests_command(task_path: str, output_path: str, config: AppConfig) -> list[dict[str, Any]]:
-    task = read_text_file(task_path, label="Task")
+def _resolve_text(
+    *,
+    cli_path: str | None,
+    config_path: str | None,
+    config_text: str | None,
+    label: str,
+) -> str:
+    path = cli_path or config_path
+    if path:
+        return read_text_file(path, label=label)
+    if config_text and config_text.strip():
+        return config_text.strip()
+    raise ConfigError(f"{label} file is missing or empty")
+
+
+def _resolve_testcases(
+    *,
+    cli_path: str | None,
+    config_path: str | None,
+    config_data: list[dict[str, Any]] | None,
+) -> list:
+    path = cli_path or config_path
+    if path:
+        return load_testcases(path)
+    if config_data is not None:
+        return validate_testcases(config_data)
+    return []
+
+
+def generate_tests_command(
+    task_path: str | None,
+    output_path: str,
+    config: AppConfig,
+    *,
+    task_text: str | None = None,
+    config_task_path: str | None = None,
+) -> list[dict[str, Any]]:
+    task = _resolve_text(
+        cli_path=task_path,
+        config_path=config_task_path,
+        config_text=task_text,
+        label="Task",
+    )
     provider = provider_from_config(config)
     provider.check_configured()
     testcases = ensure_target_testcases(
@@ -41,10 +88,38 @@ def generate_tests_command(task_path: str, output_path: str, config: AppConfig) 
     return [case.to_dict() for case in testcases]
 
 
-def evaluate_command(task_path: str, prompt_path: str, tests_path: str, config: AppConfig) -> dict[str, Any]:
-    task = read_text_file(task_path, label="Task")
-    prompt = read_text_file(prompt_path, label="Prompt")
-    testcases = load_testcases(tests_path)
+def evaluate_command(
+    task_path: str | None,
+    prompt_path: str | None,
+    tests_path: str | None,
+    config: AppConfig,
+    *,
+    task_text: str | None = None,
+    config_task_path: str | None = None,
+    prompt_text: str | None = None,
+    config_prompt_path: str | None = None,
+    tests_data: list[dict[str, Any]] | None = None,
+    config_tests_path: str | None = None,
+) -> dict[str, Any]:
+    task = _resolve_text(
+        cli_path=task_path,
+        config_path=config_task_path,
+        config_text=task_text,
+        label="Task",
+    )
+    prompt = _resolve_text(
+        cli_path=prompt_path,
+        config_path=config_prompt_path,
+        config_text=prompt_text,
+        label="Prompt",
+    )
+    testcases = _resolve_testcases(
+        cli_path=tests_path,
+        config_path=config_tests_path,
+        config_data=tests_data,
+    )
+    if not testcases:
+        raise ConfigError("Invalid tests file format: at least one test case is required")
     provider = provider_from_config(config)
     provider.check_configured()
     candidate = generate_prompt_candidates(
@@ -87,10 +162,16 @@ def evaluate_command(task_path: str, prompt_path: str, tests_path: str, config: 
 
 def run_evolution(
     *,
-    task_path: str,
+    task_path: str | None,
     config: AppConfig,
+    task_text: str | None = None,
+    config_task_path: str | None = None,
     prompt_path: str | None = None,
+    prompt_text: str | None = None,
+    config_prompt_path: str | None = None,
     tests_path: str | None = None,
+    tests_data: list[dict[str, Any]] | None = None,
+    config_tests_path: str | None = None,
     status: callable | None = None,
 ) -> dict[str, Any]:
     logs: list[str] = []
@@ -101,9 +182,25 @@ def run_evolution(
             status(message)
 
     emit("[1/9] Loading input files...")
-    task = read_text_file(task_path, label="Task")
-    baseline_prompt = read_text_file(prompt_path, label="Prompt") if prompt_path else None
-    user_tests = load_testcases(tests_path) if tests_path else []
+    task = _resolve_text(
+        cli_path=task_path,
+        config_path=config_task_path,
+        config_text=task_text,
+        label="Task",
+    )
+    baseline_prompt = None
+    if prompt_path or config_prompt_path or prompt_text:
+        baseline_prompt = _resolve_text(
+            cli_path=prompt_path,
+            config_path=config_prompt_path,
+            config_text=prompt_text,
+            label="Prompt",
+        )
+    user_tests = _resolve_testcases(
+        cli_path=tests_path,
+        config_path=config_tests_path,
+        config_data=tests_data,
+    )
 
     emit("[2/9] Checking provider configuration...")
     provider = provider_from_config(config)

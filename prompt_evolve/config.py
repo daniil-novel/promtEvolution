@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import importlib.util
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
@@ -56,6 +57,22 @@ class AppConfig:
             enabled=False,
         )
     )
+
+
+@dataclass(frozen=True)
+class ScenarioInputs:
+    task_text: str | None = None
+    task_file: str | None = None
+    prompt_text: str | None = None
+    prompt_file: str | None = None
+    tests_data: list[dict[str, Any]] | None = None
+    tests_file: str | None = None
+
+
+@dataclass(frozen=True)
+class ScenarioConfig:
+    app: AppConfig
+    inputs: ScenarioInputs = field(default_factory=ScenarioInputs)
 
 
 def default_config_dict() -> dict[str, Any]:
@@ -149,17 +166,101 @@ def config_from_dict(data: dict[str, Any]) -> AppConfig:
     )
 
 
+def _load_python_mapping(path: Path) -> dict[str, Any]:
+    spec = importlib.util.spec_from_file_location("prompt_evolve_user_config", path)
+    if spec is None or spec.loader is None:
+        raise ConfigError(f"Cannot load Python config: {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    for name in ("PROMPT_EVOLVE", "CONFIG", "config"):
+        value = getattr(module, name, None)
+        if value is not None:
+            if not isinstance(value, dict):
+                raise ConfigError(f"Python config variable {name} must be a dict")
+            return value
+    raise ConfigError("Python config must define PROMPT_EVOLVE, CONFIG, or config dict")
+
+
+def _read_config_mapping(path: str | Path) -> dict[str, Any]:
+    config_path = Path(path)
+    if not config_path.exists():
+        raise ConfigError(f"Config file not found: {config_path}")
+    if config_path.suffix.lower() == ".py":
+        return _load_python_mapping(config_path)
+    data = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+    if not isinstance(data, dict):
+        raise ConfigError("Config file must contain a mapping")
+    return data
+
+
+def _text_or_file(value: Any, *, label: str) -> tuple[str | None, str | None]:
+    if value is None:
+        return None, None
+    if isinstance(value, str):
+        if "\n" in value or len(value) > 260:
+            return value, None
+        return None, value
+    if not isinstance(value, dict):
+        raise ConfigError(f"{label} config must be a string or mapping")
+    text = value.get("text")
+    file_path = value.get("file") or value.get("path")
+    if text is not None and file_path is not None:
+        raise ConfigError(f"{label} config must use either text or file, not both")
+    return text, file_path
+
+
+def scenario_from_dict(data: dict[str, Any]) -> ScenarioConfig:
+    settings_data = data.get("settings")
+    if settings_data is None:
+        settings_data = {
+            key: value
+            for key, value in data.items()
+            if key not in {"task", "prompt", "tests"}
+        }
+    if not isinstance(settings_data, dict):
+        raise ConfigError("settings config must be a mapping")
+    task_text, task_file = _text_or_file(data.get("task"), label="task")
+    prompt_text, prompt_file = _text_or_file(data.get("prompt"), label="prompt")
+    tests_value = data.get("tests")
+    tests_data = None
+    tests_file = None
+    if isinstance(tests_value, list):
+        tests_data = tests_value
+    elif isinstance(tests_value, str):
+        tests_file = tests_value
+    elif isinstance(tests_value, dict):
+        tests_data = tests_value.get("cases")
+        tests_file = tests_value.get("file") or tests_value.get("path")
+        if tests_data is not None and tests_file is not None:
+            raise ConfigError("tests config must use either cases or file, not both")
+    elif tests_value is not None:
+        raise ConfigError("tests config must be a list, string, or mapping")
+    return ScenarioConfig(
+        app=config_from_dict(settings_data),
+        inputs=ScenarioInputs(
+            task_text=task_text,
+            task_file=task_file,
+            prompt_text=prompt_text,
+            prompt_file=prompt_file,
+            tests_data=tests_data,
+            tests_file=tests_file,
+        ),
+    )
+
+
 def load_config(path: str | Path | None = None) -> AppConfig:
     load_dotenv()
     if path is None:
         return AppConfig()
-    config_path = Path(path)
-    if not config_path.exists():
-        raise ConfigError(f"Config file not found: {config_path}")
-    data = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
-    if not isinstance(data, dict):
-        raise ConfigError("Config file must contain a YAML mapping")
+    data = _read_config_mapping(path)
     return config_from_dict(data)
+
+
+def load_scenario_config(path: str | Path | None = None) -> ScenarioConfig:
+    load_dotenv()
+    if path is None:
+        return ScenarioConfig(app=AppConfig())
+    return scenario_from_dict(_read_config_mapping(path))
 
 
 def merge_cli_overrides(config: AppConfig, overrides: dict[str, Any]) -> AppConfig:
