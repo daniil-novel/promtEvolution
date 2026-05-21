@@ -35,6 +35,36 @@ The `mock` provider is deterministic and works offline. Use it for local smoke t
 
 Copy `.env.example` to `.env` and fill only local credentials. Never commit `.env`.
 
+Recommended initialization on Windows PowerShell:
+
+```powershell
+.\scripts\init-env.ps1 -Provider openrouter
+notepad .env
+```
+
+Or pass secrets through environment variables before running the script:
+
+```powershell
+$env:OPENROUTER_API_KEY = "paste_real_key_here"
+.\scripts\init-env.ps1 -Provider openrouter -Force
+```
+
+Linux/macOS or Git Bash:
+
+```bash
+sh scripts/init-env.sh
+$EDITOR .env
+```
+
+Or:
+
+```bash
+export OPENROUTER_API_KEY="paste_real_key_here"
+FORCE=1 sh scripts/init-env.sh
+```
+
+The scripts create `.env` and `prompt-evolve.yaml`. Replace `PASTE_*` placeholders in `.env` with real secrets, then run the CLI.
+
 ## OpenRouter
 
 Set `OPENROUTER_API_KEY` and run with `--provider openrouter`.
@@ -54,6 +84,34 @@ prompt-evolve run --task examples/task.md --provider gigachat --model GigaChat-P
 ```
 
 The GigaChat integration is isolated behind the provider interface. If `GIGACHAT_CREDENTIALS` or `base_url` is missing, the CLI exits with a clear configuration error.
+
+For GigaChat, set either `gigachat.base_url` in `prompt-evolve.yaml` or `GIGACHAT_BASE_URL` in `.env`.
+
+## Docker
+
+Build the image:
+
+```bash
+docker compose build
+```
+
+Offline smoke test with the mock provider:
+
+```bash
+docker compose run --rm prompt-evolve run --task examples/task.md --provider mock --target-tests 2 --iterations 1 --candidates 2 --pass-k 2 --out runs/docker-smoke
+```
+
+Real OpenRouter run after editing `.env`:
+
+```bash
+docker compose run --rm prompt-evolve run --config prompt-evolve.yaml --task examples/task.md
+```
+
+For real project prompts, mount or keep your files under the repository folder and pass their paths, for example:
+
+```bash
+docker compose run --rm prompt-evolve run --config prompt-evolve.yaml --task my_project/task.md --prompt my_project/prompt.md --tests my_project/tests.json --out runs/my_project
+```
 
 ## Основные команды
 

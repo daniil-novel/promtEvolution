@@ -12,6 +12,12 @@ def test_provider_factory_mock():
     assert provider_from_config(AppConfig(provider="mock")).name == "mock"
 
 
+def test_gigachat_factory_reads_base_url_from_env(monkeypatch):
+    monkeypatch.setenv("GIGACHAT_BASE_URL", "https://gigachat.env.test")
+    provider = provider_from_config(AppConfig(provider="gigachat"))
+    assert provider.base_url == "https://gigachat.env.test"
+
+
 def test_openrouter_missing_key(monkeypatch):
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     with pytest.raises(ConfigError, match="OPENROUTER_API_KEY"):

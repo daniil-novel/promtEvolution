@@ -1,0 +1,11 @@
+services:
+  prompt-evolve:
+    build:
+      context: .
+    image: prompt-evolution-cli:local
+    env_file:
+      - .env
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    entrypoint: ["prompt-evolve"]

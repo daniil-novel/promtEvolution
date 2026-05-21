@@ -178,7 +178,7 @@ def provider_from_config(config: AppConfig):
     if config.provider == "gigachat":
         return GigaChatProvider(
             credentials_env=config.gigachat.credentials_env,
-            base_url=config.gigachat.base_url,
+            base_url=config.gigachat.base_url or os.getenv("GIGACHAT_BASE_URL"),
             default_model=config.model or "GigaChat-Pro",
         )
     raise ConfigError("Unsupported provider")

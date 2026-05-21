@@ -1,0 +1,14 @@
+.git
+.env
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+htmlcov
+runs
+*.egg-info
+dist
+build
+multiagent_system_prompt_prompt_evolution_cli.md

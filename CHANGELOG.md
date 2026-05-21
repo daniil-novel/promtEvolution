@@ -4,6 +4,45 @@
 
 ### Что изменено
 
+- Добавлена Docker-обвязка: `Dockerfile`, `.dockerignore`, `docker-compose.yml`.
+- Добавлены init-скрипты `scripts/init-env.ps1` и `scripts/init-env.sh` для создания `.env` и `prompt-evolve.yaml`.
+- Добавлена поддержка `GIGACHAT_BASE_URL` из окружения как fallback для GigaChat provider.
+- Расширена документация по Docker, реальным запускам и инициализации секретов.
+
+### Для чего это нужно
+
+- Пользователь может вставить секреты в локальный `.env`, запустить init-скрипт и затем тестировать реальные промпты локально или через Docker.
+
+### Почему это сделано именно так
+
+- Секреты остаются вне git, Docker использует `env_file`, а CLI сохраняет прежнюю простую архитектуру provider interface.
+
+### Затронутые файлы
+
+- `Dockerfile`
+- `.dockerignore`
+- `docker-compose.yml`
+- `scripts/init-env.ps1`
+- `scripts/init-env.sh`
+- `.env.example`
+- `prompt_evolve/providers.py`
+- `README.md`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing --cov-report=html`
+- Docker build/smoke проверяется отдельным запуском.
+
+### Риски
+
+- Реальные провайдеры требуют валидных ключей и корректного GigaChat endpoint.
+
+## 2026-05-21 — Commit: 8b6d76f
+
+### Что изменено
+
 - Расширен README: установка, OpenRouter, GigaChat, команды, форматы файлов, метрики, SCOPE, тестирование и troubleshooting.
 - Закреплён диапазон `pytest-cov` для более стабильной установки dev-зависимостей.
 
