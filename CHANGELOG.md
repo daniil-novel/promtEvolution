@@ -4,6 +4,36 @@
 
 ### Что изменено
 
+- Добавлены unit-тесты и integration-тесты для CLI, config, providers, testcases, prompts, evaluator, metrics, SCOPE, reports и pipeline.
+- Покрыты mock OpenRouter/GigaChat сценарии, ошибки конфигурации, invalid JSON retry, edge cases CLI и отчёты.
+
+### Для чего это нужно
+
+- Тесты подтверждают ключевые требования FRD/SRS и защищают CLI от регрессий.
+
+### Почему это сделано именно так
+
+- Все LLM-вызовы в тестах замоканы через fake/mock provider и mock HTTP, без реальных запросов к OpenRouter или GigaChat.
+
+### Затронутые файлы
+
+- `tests/unit/*`
+- `tests/integration/*`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+
+### Риски
+
+- Реальный e2e с провайдерами остаётся ручным и требует переменных окружения.
+
+## 2026-05-21 — Commit: 3ffc9df
+
+### Что изменено
+
 - Добавлены core-модули CLI: конфигурация, провайдеры, LLM JSON retry, тесткейсы, промпты, evaluator, метрики, SCOPE, отчёты и pipeline.
 - Реализованы OpenRouter adapter, GigaChat hook, mock provider и extension point для системных/модельных метрик.
 

@@ -1,0 +1,84 @@
+import json
+
+import httpx
+import pytest
+
+from prompt_evolve.config import AppConfig, ConfigError
+from prompt_evolve.llm import LLMJsonError, generate_json, parse_json_response
+from prompt_evolve.providers import GigaChatProvider, MockProvider, OpenRouterProvider, provider_from_config
+
+
+def test_provider_factory_mock():
+    assert provider_from_config(AppConfig(provider="mock")).name == "mock"
+
+
+def test_openrouter_missing_key(monkeypatch):
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    with pytest.raises(ConfigError, match="OPENROUTER_API_KEY"):
+        OpenRouterProvider().check_configured()
+
+
+def test_gigachat_missing_credentials(monkeypatch):
+    monkeypatch.delenv("GIGACHAT_CREDENTIALS", raising=False)
+    with pytest.raises(ConfigError, match="GIGACHAT_CREDENTIALS"):
+        GigaChatProvider(base_url="https://example.test").check_configured()
+
+
+def test_gigachat_missing_base_url(monkeypatch):
+    monkeypatch.setenv("GIGACHAT_CREDENTIALS", "secret")
+    with pytest.raises(ConfigError, match="base_url"):
+        GigaChatProvider().check_configured()
+
+
+def test_openrouter_generate_with_mock_http(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "secret")
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers["authorization"] == "Bearer secret"
+        return httpx.Response(
+            200,
+            json={
+                "choices": [{"message": {"content": "hello"}}],
+                "usage": {"total_tokens": 3},
+            },
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    response = OpenRouterProvider(client=client).generate([{"role": "user", "content": "Hi"}])
+    assert response.content == "hello"
+    assert response.usage["total_tokens"] == 3
+
+
+def test_gigachat_generate_with_mock_http(monkeypatch):
+    monkeypatch.setenv("GIGACHAT_CREDENTIALS", "secret")
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}]})
+
+    provider = GigaChatProvider(base_url="https://gigachat.test", client=httpx.Client(transport=httpx.MockTransport(handler)))
+    assert provider.generate([{"role": "user", "content": "Hi"}]).content == "ok"
+
+
+def test_parse_json_response_fenced():
+    assert parse_json_response("```json\n{\"a\": 1}\n```") == {"a": 1}
+
+
+def test_parse_json_response_invalid():
+    with pytest.raises(LLMJsonError):
+        parse_json_response("not-json")
+
+
+def test_generate_json_retries_invalid():
+    class RetryProvider(MockProvider):
+        def __init__(self):
+            self.calls = 0
+
+        def generate(self, messages, *, model=None, reasoning=None, response_format=None):
+            self.calls += 1
+            if self.calls == 1:
+                return type("Resp", (), {"content": "bad"})()
+            return type("Resp", (), {"content": json.dumps({"ok": True})})()
+
+    provider = RetryProvider()
+    assert generate_json(provider, [{"role": "user", "content": "x"}]) == {"ok": True}
+    assert provider.calls == 2
