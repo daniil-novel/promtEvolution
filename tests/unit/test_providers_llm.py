@@ -24,8 +24,20 @@ def test_openrouter_missing_key(monkeypatch):
         OpenRouterProvider().check_configured()
 
 
+def test_openrouter_placeholder_key_is_missing(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "PASTE_OPENROUTER_API_KEY_HERE")
+    with pytest.raises(ConfigError, match="OPENROUTER_API_KEY"):
+        OpenRouterProvider().check_configured()
+
+
 def test_gigachat_missing_credentials(monkeypatch):
     monkeypatch.delenv("GIGACHAT_CREDENTIALS", raising=False)
+    with pytest.raises(ConfigError, match="GIGACHAT_CREDENTIALS"):
+        GigaChatProvider(base_url="https://example.test").check_configured()
+
+
+def test_gigachat_placeholder_credentials_are_missing(monkeypatch):
+    monkeypatch.setenv("GIGACHAT_CREDENTIALS", "your_gigachat_credentials_here")
     with pytest.raises(ConfigError, match="GIGACHAT_CREDENTIALS"):
         GigaChatProvider(base_url="https://example.test").check_configured()
 

@@ -4,6 +4,45 @@
 
 ### Что изменено
 
+- Добавлены локальные setup/launcher scripts для запуска без Docker и без зависимости от глобального `prompt-evolve.exe`.
+- README дополнен обходом Windows/pip ошибки `Failed to write executable ... .deleteme`.
+- Placeholder-секреты `PASTE_*` и `your_*` больше не считаются валидной конфигурацией provider.
+- `run-local.ps1` передаёт CLI-аргументы через raw `$args`, чтобы PowerShell не перехватывал флаги вроде `--out`.
+
+### Для чего это нужно
+
+- Пользователь может запускать проект локально через `.venv`, даже если глобальная Python-установка повреждена или конфликтует с console scripts.
+
+### Почему это сделано именно так
+
+- `.venv` изолирует entrypoints и зависимости, а `run-local.ps1` запускает CLI через `python -m prompt_evolve.cli`, обходя проблемную перезапись exe-файлов.
+
+### Затронутые файлы
+
+- `scripts/setup-local.ps1`
+- `scripts/run-local.ps1`
+- `scripts/setup-local.sh`
+- `scripts/run-local.sh`
+- `prompt_evolve/providers.py`
+- `tests/unit/test_providers_llm.py`
+- `README.md`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+- Локальная проверка CLI через `python -m prompt_evolve.cli --help`.
+- Локальный smoke-run через `.\scripts\run-local.ps1 run --task examples/task.md --provider mock ...`.
+
+### Риски
+
+- Скрипт setup требует доступный `python` в PATH на Windows или `python3` на Linux/macOS.
+
+## 2026-05-21 — Commit: a95d736
+
+### Что изменено
+
 - Заменены секретоподобные примеры ключей в requirement-документах на нейтральные placeholders.
 
 ### Для чего это нужно

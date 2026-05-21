@@ -23,10 +23,25 @@ python -m pip install -e .[dev]
 
 If your Windows environment has a broken global `pytest` executable, use `python -m pytest`.
 
+Recommended local Windows setup uses an isolated `.venv` and avoids global `prompt-evolve.exe` conflicts:
+
+```powershell
+.\scripts\setup-local.ps1
+.\scripts\run-local.ps1 --help
+```
+
+If global pip fails with `Failed to write executable` or `.deleteme`, do not fight the global Python install. Use the local setup above, then run commands through `.\scripts\run-local.ps1`.
+
 ## Быстрый старт
 
 ```bash
 prompt-evolve run --task examples/task.md --provider mock --out runs/latest
+```
+
+Local `.venv` equivalent:
+
+```powershell
+.\scripts\run-local.ps1 run --task examples/task.md --provider mock --out runs/latest
 ```
 
 The `mock` provider is deterministic and works offline. Use it for local smoke tests and CI-like checks.

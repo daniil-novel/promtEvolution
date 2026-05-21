@@ -21,3 +21,17 @@ def test_init_scripts_create_expected_variables():
         assert "GIGACHAT_CREDENTIALS" in content
         assert "GIGACHAT_BASE_URL" in content
         assert "prompt-evolve.yaml" in content
+
+
+def test_local_setup_scripts_use_venv_and_module_launcher():
+    setup_ps1 = Path("scripts/setup-local.ps1").read_text(encoding="utf-8")
+    run_ps1 = Path("scripts/run-local.ps1").read_text(encoding="utf-8")
+    setup_sh = Path("scripts/setup-local.sh").read_text(encoding="utf-8")
+    run_sh = Path("scripts/run-local.sh").read_text(encoding="utf-8")
+
+    assert "python -m venv" in setup_ps1
+    assert "-m pip install -e" in setup_ps1
+    assert "-m prompt_evolve.cli" in run_ps1
+    assert "python3 -m venv" in setup_sh
+    assert "-m pip install -e" in setup_sh
+    assert "-m prompt_evolve.cli" in run_sh

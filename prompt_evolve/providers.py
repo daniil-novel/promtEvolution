@@ -17,6 +17,16 @@ class ProviderError(RuntimeError):
     """Raised when provider communication fails."""
 
 
+def _is_missing_secret(value: str | None) -> bool:
+    if value is None:
+        return True
+    normalized = value.strip()
+    if not normalized:
+        return True
+    lowered = normalized.lower()
+    return lowered.startswith("paste_") or lowered.startswith("your_")
+
+
 @dataclass
 class OpenRouterProvider:
     api_key_env: str = "OPENROUTER_API_KEY"
@@ -26,7 +36,7 @@ class OpenRouterProvider:
     name: str = "openrouter"
 
     def check_configured(self) -> None:
-        if not os.getenv(self.api_key_env):
+        if _is_missing_secret(os.getenv(self.api_key_env)):
             raise ConfigError(
                 f"OpenRouter API key is missing. Set {self.api_key_env} in .env or the shell."
             )
@@ -76,7 +86,7 @@ class GigaChatProvider:
     name: str = "gigachat"
 
     def check_configured(self) -> None:
-        if not os.getenv(self.credentials_env):
+        if _is_missing_secret(os.getenv(self.credentials_env)):
             raise ConfigError(
                 f"GigaChat provider is selected but credentials are missing. Set {self.credentials_env}."
             )

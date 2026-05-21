@@ -145,7 +145,7 @@ def test_cli_validation_error(tmp_path):
 
 
 def test_missing_openrouter_key(tmp_path, monkeypatch):
-    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "")
     task, _, _ = write_inputs(tmp_path)
     result = runner.invoke(app, ["run", "--task", str(task), "--target-tests", "1", "--iterations", "1"])
     assert result.exit_code == 1
