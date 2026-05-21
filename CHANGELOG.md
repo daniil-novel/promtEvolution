@@ -4,6 +4,36 @@
 
 ### Что изменено
 
+- Расширен README: установка, OpenRouter, GigaChat, команды, форматы файлов, метрики, SCOPE, тестирование и troubleshooting.
+- Закреплён диапазон `pytest-cov` для более стабильной установки dev-зависимостей.
+
+### Для чего это нужно
+
+- README теперь позволяет новому разработчику запустить и проверить CLI без дополнительных пояснений.
+
+### Почему это сделано именно так
+
+- Документация следует обязательной структуре из требований, а pin диапазона снижает риск конфликтов в Windows-окружении.
+
+### Затронутые файлы
+
+- `README.md`
+- `pyproject.toml`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+
+### Риски
+
+- Гид по заливке остаётся placeholder до передачи отдельной инструкции пользователем.
+
+## 2026-05-21 — Commit: e274338
+
+### Что изменено
+
 - Добавлены unit-тесты и integration-тесты для CLI, config, providers, testcases, prompts, evaluator, metrics, SCOPE, reports и pipeline.
 - Покрыты mock OpenRouter/GigaChat сценарии, ошибки конфигурации, invalid JSON retry, edge cases CLI и отчёты.
 
