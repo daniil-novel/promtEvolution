@@ -12,6 +12,12 @@ def test_provider_factory_mock():
     assert provider_from_config(AppConfig(provider="mock")).name == "mock"
 
 
+def test_mock_provider_returns_russian_prompt():
+    response = MockProvider().generate([{"role": "user", "content": "Создай промпт"}])
+    assert "## Роль" in response.content
+    assert "reroute_to_coordinator" in response.content
+
+
 def test_gigachat_factory_reads_base_url_from_env(monkeypatch):
     monkeypatch.setenv("GIGACHAT_BASE_URL", "https://gigachat.env.test")
     provider = provider_from_config(AppConfig(provider="gigachat"))

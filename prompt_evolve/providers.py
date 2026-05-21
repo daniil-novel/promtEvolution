@@ -135,43 +135,67 @@ class MockProvider:
         response_format: str | None = None,
     ) -> LLMResponse:
         text = "\n".join(message.get("content", "") for message in messages).lower()
-        if "test cases" in text or "testcases" in text:
+        if "тесткей" in text or "test cases" in text or "testcases" in text:
             content = json.dumps(
                 [
                     {
                         "id": "TC-001",
-                        "name": "Generated happy path",
+                        "name": "Явно завершённый ответ агента",
                         "type": "happy_path",
                         "priority": "high",
-                        "input": "Summarize duplicated status notes.",
-                        "expected_behavior": "Return concise Markdown and preserve action items.",
-                        "evaluation_criteria": ["Uses Markdown", "Preserves action items"],
+                        "input": "Агент сообщил: задача выполнена, тесты пройдены, отчёт сохранён, открытых вопросов нет.",
+                        "expected_behavior": "Вернуть JSON с decision=continue_to_final.",
+                        "evaluation_criteria": [
+                            "Ответ является валидным JSON-объектом",
+                            "decision равен continue_to_final",
+                            "Нет текста вне JSON",
+                        ],
                     }
                 ]
             )
-        elif "evaluate" in text:
+        elif "evaluate" in text or "оцени" in text:
             content = json.dumps(
                 {
                     "passed": True,
                     "score": 0.95,
-                    "reason": "Mock response satisfies the criteria.",
+                    "reason": "Mock-ответ соответствует критериям.",
                     "failed_criteria": [],
                     "error_type": None,
                 }
             )
-        elif "guideline" in text:
+        elif "guideline" in text or "scope" in text:
             content = json.dumps(
                 {
-                    "corrective": ["Validate required format before answering."],
-                    "enhancement": ["Handle happy path and edge cases explicitly."],
+                    "corrective": ["Перед ответом проверяй точный JSON-формат и допустимые значения decision."],
+                    "enhancement": ["Явно различай завершённый ответ, сомнение, блокер и нарушение формата."],
                 }
             )
         else:
             content = (
-                "You are a precise assistant.\n"
-                "Goal: solve the user's task faithfully.\n"
-                "Rules: preserve facts, follow the requested format, avoid hallucinations, "
-                "and self-check before responding."
+                "## Роль\n"
+                "Ты ревьюер качества ответа агента.\n\n"
+                "---\n\n"
+                "## Задача\n"
+                "Определи, можно ли переходить к финальному ответу или нужно вернуть управление координатору.\n\n"
+                "---\n\n"
+                "## Правила принятия решения\n"
+                "- Если ответ агента явно завершён, проверен и не содержит открытых вопросов — выбери `continue_to_final`.\n"
+                "- Если есть блокер, недоделка, неясность, отсутствие проверки или любое сомнение — выбери `reroute_to_coordinator`.\n"
+                "- НИКОГДА не выбирай `continue_to_final`, если завершённость ответа не доказана.\n\n"
+                "---\n\n"
+                "## Формат ответа\n"
+                "Отвечай только JSON-объектом:\n"
+                "{\"decision\":\"continue_to_final|reroute_to_coordinator\",\"reason\":\"краткое обоснование\"}\n\n"
+                "---\n\n"
+                "<self_check>\n"
+                "Перед отправкой проверь:\n"
+                "□ Ответ является валидным JSON.\n"
+                "□ Поле decision содержит только допустимое значение.\n"
+                "□ При любом сомнении выбран reroute_to_coordinator.\n"
+                "□ Нет Markdown и текста вне JSON.\n"
+                "□ reason краткий и конкретный.\n"
+                "Если хоть один пункт не выполнен — исправь до отправки.\n"
+                "</self_check>"
             )
         return LLMResponse(content=content, usage={"prompt_tokens": 10, "completion_tokens": 10})
 

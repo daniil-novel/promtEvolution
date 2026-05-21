@@ -4,6 +4,48 @@
 
 ### Что изменено
 
+- Пример `examples/prompt_project.py` переписан под реальный промпт ревьюера качества.
+- Fallback-генерация тесткейсов теперь создаёт русские, разнообразные и предметные тесты вместо одинаковых generic-примеров.
+- Базовый seed prompt и mock provider теперь возвращают русскоязычный структурированный системный промпт с prompt engineering техниками и `<self_check>`.
+- Выбор лучшего промпта теперь предпочитает структурированные кандидаты при равных метриках, а не короткий baseline.
+- После удаления дублей тесткейсы добираются до `target_tests` и перенумеровываются последовательно.
+- Повторяющиеся `SCOPE Guidelines` больше не накапливаются в финальном промпте.
+- Добавлена короткая русская инструкция `docs/quick_usage_ru.md`.
+
+### Для чего это нужно
+
+- Локальный запуск без реального LLM теперь даёт понятный результат и показывает правильный workflow для генерации тестов и улучшения промпта.
+
+### Почему это сделано именно так
+
+- `mock` остаётся безопасным демонстрационным режимом, а реальные качественные улучшения можно запускать через OpenRouter после настройки `.env`.
+
+### Затронутые файлы
+
+- `prompt_evolve/prompts.py`
+- `prompt_evolve/testcases.py`
+- `prompt_evolve/providers.py`
+- `prompt_evolve/scope.py`
+- `examples/task.md`
+- `examples/prompt_project.py`
+- `docs/quick_usage_ru.md`
+- `README.md`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+- Smoke-run `generate-tests` и `run` для `examples/prompt_project.py`.
+
+### Риски
+
+- Mock-режим показывает структуру и workflow, но не заменяет реальный OpenRouter-прогон для production-качества.
+
+## 2026-05-21 — Commit: c0e55ec
+
+### Что изменено
+
 - Добавлена поддержка Python scenario config через `PROMPT_EVOLVE = {...}`.
 - CLI-команды `run`, `generate-tests` и `evaluate` теперь могут брать task/prompt/tests из config-файла.
 - Добавлены пример `examples/prompt_project.py` и подробный guide `docs/python_config_guide.md`.

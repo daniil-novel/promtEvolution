@@ -11,6 +11,7 @@ from prompt_evolve.testcases import (
     save_testcases,
     self_check_testcases,
     testcase_from_dict,
+    renumber_testcases,
     validate_testcases,
 )
 
@@ -62,10 +63,56 @@ def test_dedupe_testcases():
     assert len(dedupe_testcases([a, b])) == 1
 
 
+def test_dedupe_testcases_uses_input_even_when_expected_differs():
+    a = testcase_from_dict({**valid_case("TC-001", "Same"), "expected_behavior": "One"})
+    b = testcase_from_dict({**valid_case("TC-002", "Same"), "expected_behavior": "Two"})
+    assert dedupe_testcases([a, b]) == [a]
+
+
 def test_ensure_target_generates_missing():
     cases = ensure_target_testcases("Task", [], MockProvider(), target_tests=3)
     assert len(cases) == 3
     assert cases[0].id == "TC-001"
+    assert "Проверочный вход" in cases[1].input
+
+
+def test_ensure_target_generates_reviewer_specific_cases():
+    task = (
+        "Ты ревьюер качества. Отвечай JSON. "
+        "decision одно из continue_to_final, reroute_to_coordinator."
+    )
+    cases = ensure_target_testcases(task, [], MockProvider(), target_tests=4)
+    assert len(cases) == 4
+    assert any("reroute_to_coordinator" in case.expected_behavior for case in cases)
+    assert all("JSON" in " ".join(case.evaluation_criteria) or "decision" in " ".join(case.evaluation_criteria) for case in cases)
+
+
+def test_ensure_target_refills_after_dedupe():
+    task = (
+        "Ты ревьюер качества. Отвечай JSON. "
+        "decision одно из continue_to_final, reroute_to_coordinator."
+    )
+    duplicate_existing = testcase_from_dict(
+        {
+            "id": "TC-000",
+            "name": "Existing duplicate",
+            "type": "happy_path",
+            "priority": "high",
+            "input": "Агент сообщил: задача выполнена, тесты пройдены, отчёт сохранён, открытых вопросов нет.",
+            "expected_behavior": "Вернуть JSON с decision=continue_to_final.",
+            "evaluation_criteria": ["Ответ является валидным JSON-объектом", "decision равен continue_to_final"],
+        }
+    )
+    cases = ensure_target_testcases(task, [duplicate_existing], MockProvider(), target_tests=4)
+    assert len(cases) == 4
+    assert len({case.input for case in cases}) == 4
+    assert [case.id for case in cases] == ["TC-001", "TC-002", "TC-003", "TC-004"]
+
+
+def test_renumber_testcases():
+    cases = [testcase_from_dict(valid_case("OLD-1")), testcase_from_dict(valid_case("OLD-2", "Input 2"))]
+    renumbered = renumber_testcases(cases)
+    assert [case.id for case in renumbered] == ["TC-001", "TC-002"]
 
 
 def test_user_tests_only_does_not_generate():

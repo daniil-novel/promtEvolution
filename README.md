@@ -176,6 +176,9 @@ PROMPT_EVOLVE = {
 
 See `docs/python_config_guide.md` for a detailed guide.
 
+Русская короткая инструкция для сценария “сгенерировать тесты и улучшить промпт”:
+`docs/quick_usage_ru.md`.
+
 ## Формат task.md
 
 Markdown file describing the task and requirements.

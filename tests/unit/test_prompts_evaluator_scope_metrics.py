@@ -46,15 +46,28 @@ def result(candidate_id, passed, score=1.0, error_type=None):
 
 
 def test_build_and_generate_prompt_candidates():
-    assert "Do not hallucinate" in build_seed_prompt("Task")
+    assert "НИКОГДА" in build_seed_prompt("Task")
+    assert "<self_check>" in build_seed_prompt("Task")
     candidates = generate_prompt_candidates("Task", None, MockProvider(), count=2, iteration=1)
     assert len(candidates) == 2
     assert candidates[0].id.startswith("iteration_1_candidate")
+    assert "## Роль" in candidates[0].content
 
 
 def test_select_best_prompt_prefers_pass_rate():
     best = select_best_prompt([result("bad", False, 0.2), result("good", True, 0.9)])
     assert best.candidate.id == "good"
+
+
+def test_select_best_prompt_prefers_structured_candidate_over_equal_baseline():
+    baseline = result("iteration_1_baseline", True, 0.9)
+    structured = result("iteration_1_candidate_1", True, 0.9)
+    structured.candidate = PromptCandidate(
+        "iteration_1_candidate_1",
+        "## Роль\n## Задача\n## Правила\n## Формат ответа\n<self_check>\ndecision reroute_to_coordinator continue_to_final",
+    )
+    best = select_best_prompt([baseline, structured])
+    assert best.candidate.id == "iteration_1_candidate_1"
 
 
 def test_evaluate_response_and_run_candidate():
@@ -109,3 +122,13 @@ def test_scope_guidelines_and_update_prompt():
     assert dedupe_guidelines(["A useful rule", "A useful rule"]) == ["A useful rule"]
     updated = update_prompt_with_guidelines("Prompt", {"corrective": ["Fix format"], "enhancement": []})
     assert "SCOPE Guidelines" in updated
+
+
+def test_update_prompt_with_guidelines_replaces_previous_scope_block():
+    updated = update_prompt_with_guidelines(
+        "Prompt\n\nSCOPE Guidelines:\n- Old duplicated rule\n",
+        {"corrective": ["New rule"], "enhancement": ["New rule"]},
+    )
+    assert "Old duplicated rule" not in updated
+    assert updated.count("SCOPE Guidelines:") == 1
+    assert updated.count("New rule") == 1

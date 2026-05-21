@@ -70,8 +70,13 @@ def self_check_guidelines(guidelines: dict[str, list[str]]) -> dict[str, list[st
 
 
 def update_prompt_with_guidelines(prompt: str, guidelines: dict[str, list[str]]) -> str:
-    lines = [prompt.rstrip(), "", "SCOPE Guidelines:"]
+    base_prompt = prompt.split("SCOPE Guidelines:", 1)[0].rstrip()
+    lines = [base_prompt, "", "SCOPE Guidelines:"]
+    existing: set[str] = set()
     for label in ("corrective", "enhancement"):
         for guideline in guidelines.get(label, []):
-            lines.append(f"- {guideline}")
+            normalized = guideline.strip().lower()
+            if normalized and normalized not in existing:
+                existing.add(normalized)
+                lines.append(f"- {guideline}")
     return "\n".join(lines).strip() + "\n"

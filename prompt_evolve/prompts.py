@@ -6,16 +6,66 @@ from .llm import generate_text
 from .models import LLMProvider, PromptCandidate, PromptRunResult
 
 
+PROMPT_ENGINEERING_TECHNIQUES = """
+## Техники усиления промпта
+
+Применяй только там, где это помогает задаче:
+
+### 1. Секции и заголовки
+- `## Роль`
+- `## Задача`
+- `## Входные данные`
+- `## Правила принятия решения`
+- `## Формат ответа`
+- `## Самопроверка`
+
+### 2. Явные ограничения
+- Один критичный запрет можно выделить через `НИКОГДА`.
+- Остальные правила формулируй спокойно и проверяемо.
+
+### 3. Структурированные значения
+- Для enum-значений используй backticks.
+- Для JSON-формата показывай точную схему.
+- Для неизменяемых правил используй отдельный блок.
+
+### 4. Самопроверка
+- Добавляй `<self_check>` с 5-8 конкретными пунктами.
+- Если пункт не выполнен, модель должна исправить ответ до отправки.
+
+### 5. Токенное разделение
+- Списки: `элемент1, элемент2, элемент3`.
+- Коды и enum: `continue_to_final`, `reroute_to_coordinator`.
+- Длинные инструкции разбивай на короткие абзацы и списки.
+""".strip()
+
+
 def build_seed_prompt(task: str) -> str:
     return (
-        "You are a reliable AI assistant.\n"
-        f"Goal: {task.strip()}\n"
-        "Rules:\n"
-        "- Preserve user intent and facts.\n"
-        "- Follow the requested output format.\n"
-        "- Handle happy path, edge cases, and malformed inputs.\n"
-        "- Do not hallucinate or add unsupported details.\n"
-        "- Before answering, self-check the result against the task requirements.\n"
+        "## Роль\n"
+        "Ты надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n"
+        "---\n\n"
+        "## Задача\n"
+        f"{task.strip()}\n\n"
+        "---\n\n"
+        "## Правила\n"
+        "- Сохраняй исходный смысл и все обязательные ограничения.\n"
+        "- Делай правила проверяемыми и однозначными.\n"
+        "- Явно задавай допустимые значения, формат ответа и условия выбора.\n"
+        "- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n"
+        "- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n"
+        "---\n\n"
+        "## Формат ответа\n"
+        "Верни результат в формате, который требует задача.\n\n"
+        "---\n\n"
+        "<self_check>\n"
+        "Перед отправкой проверь:\n"
+        "□ Все обязательные правила задачи сохранены.\n"
+        "□ Формат ответа соответствует требованию.\n"
+        "□ Нет лишних пояснений, если задача требует только результат.\n"
+        "□ Нет выдуманных фактов или новых ограничений.\n"
+        "□ Неоднозначные случаи обработаны явно.\n"
+        "Если хоть один пункт не выполнен — исправь ответ до отправки.\n"
+        "</self_check>\n"
     )
 
 
@@ -37,14 +87,30 @@ def generate_prompt_candidates(
         messages = [
             {
                 "role": "system",
-                "content": "Create a production-ready system prompt with role, goal, rules, constraints, output format, and self-check.",
+                "content": (
+                    "Ты senior prompt engineer. Улучши системный промпт на русском языке. "
+                    "Верни только готовый промпт в Markdown, без объяснений."
+                ),
             },
             {
                 "role": "user",
                 "content": (
-                    f"Task:\n{task}\n"
-                    f"Baseline prompt:\n{baseline_prompt or 'Create from scratch.'}\n"
-                    f"Create candidate {candidate_number}."
+                    "Преобразуй сырой промпт в структурированный production-ready системный промпт.\n\n"
+                    "<raw_task>\n"
+                    f"{task}\n"
+                    "</raw_task>\n\n"
+                    "<raw_prompt>\n"
+                    f"{baseline_prompt or 'Создай промпт с нуля на основе задачи.'}\n"
+                    "</raw_prompt>\n\n"
+                    f"{PROMPT_ENGINEERING_TECHNIQUES}\n\n"
+                    "## Требования к результату\n"
+                    "- Сохрани исходный смысл.\n"
+                    "- Разбей промпт на понятные секции.\n"
+                    "- Добавь точный формат ответа.\n"
+                    "- Добавь правила для спорных и пограничных случаев.\n"
+                    "- Добавь блок `<self_check>`.\n"
+                    "- Не добавляй объяснений вне промпта.\n\n"
+                    f"Создай вариант промпта №{candidate_number}."
                 ),
             },
         ]
@@ -66,7 +132,20 @@ def select_best_prompt(results: list[PromptRunResult]) -> PromptRunResult:
     if not results:
         raise ValueError("No prompt results to select from")
 
-    def key(result: PromptRunResult) -> tuple[float, float, int, int]:
+    def structure_score(prompt: str) -> int:
+        markers = [
+            "## Роль",
+            "## Задача",
+            "## Правила",
+            "## Формат ответа",
+            "<self_check>",
+            "decision",
+            "reroute_to_coordinator",
+            "continue_to_final",
+        ]
+        return sum(1 for marker in markers if marker in prompt)
+
+    def key(result: PromptRunResult) -> tuple[float, float, float, int, int, int, int]:
         total = max(len(result.evaluations), 1)
         pass_rate = sum(1 for item in result.evaluations if item.passed) / total
         critical = [
@@ -77,6 +156,15 @@ def select_best_prompt(results: list[PromptRunResult]) -> PromptRunResult:
         critical_rate = sum(1 for item in critical if item.passed) / max(len(critical), 1)
         avg_score = sum(item.score for item in result.evaluations) / total
         format_violations = sum(1 for item in result.evaluations if item.error_type == "format_violation")
-        return (pass_rate, critical_rate, avg_score, -format_violations, -len(result.candidate.content))
+        is_baseline = 1 if result.candidate.id.endswith("_baseline") else 0
+        return (
+            pass_rate,
+            critical_rate,
+            avg_score,
+            structure_score(result.candidate.content),
+            -format_violations,
+            -is_baseline,
+            -len(result.candidate.content),
+        )
 
     return max(results, key=key)
