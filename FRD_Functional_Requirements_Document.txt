@@ -169,8 +169,8 @@ prompt-evolve evaluate \
 Пример:
 
 ```bash
-OPENROUTER_API_KEY=sk-or-v1-...
-GIGACHAT_CREDENTIALS=...
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+GIGACHAT_CREDENTIALS=your_gigachat_credentials_here
 ```
 
 Требования:

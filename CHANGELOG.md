@@ -4,6 +4,35 @@
 
 ### Что изменено
 
+- Заменены секретоподобные примеры ключей в requirement-документах на нейтральные placeholders.
+
+### Для чего это нужно
+
+- Репозиторий должен проходить базовый secret-scan без ложных срабатываний на примеры формата ключей.
+
+### Почему это сделано именно так
+
+- Изменены только демонстрационные значения, требования по переменным окружения сохранены.
+
+### Затронутые файлы
+
+- `FRD_Functional_Requirements_Document.txt`
+- `Prompt_Evolution_CLI_All_Documents.txt`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- Secret-scan через `git grep` по ключевым паттернам.
+
+### Риски
+
+- Нет функционального риска: это документационная санитарная правка.
+
+## 2026-05-21 — Commit: 4a0add1
+
+### Что изменено
+
 - Добавлена Docker-обвязка: `Dockerfile`, `.dockerignore`, `docker-compose.yml`.
 - Добавлены init-скрипты `scripts/init-env.ps1` и `scripts/init-env.sh` для создания `.env` и `prompt-evolve.yaml`.
 - Добавлена поддержка `GIGACHAT_BASE_URL` из окружения как fallback для GigaChat provider.
