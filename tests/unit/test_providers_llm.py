@@ -5,7 +5,13 @@ import pytest
 
 from prompt_evolve.config import AppConfig, ConfigError
 from prompt_evolve.llm import LLMJsonError, generate_json, parse_json_response
-from prompt_evolve.providers import GigaChatProvider, MockProvider, OpenRouterProvider, provider_from_config
+from prompt_evolve.providers import (
+    GigaChatProvider,
+    MockProvider,
+    OpenRouterProvider,
+    ProviderError,
+    provider_from_config,
+)
 
 
 def test_provider_factory_mock():
@@ -59,6 +65,8 @@ def test_openrouter_generate_with_mock_http(monkeypatch):
 
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.headers["authorization"] == "Bearer secret"
+        payload = json.loads(request.content)
+        assert payload["reasoning"]["effort"] == "xhigh"
         return httpx.Response(
             200,
             json={
@@ -68,9 +76,56 @@ def test_openrouter_generate_with_mock_http(monkeypatch):
         )
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
-    response = OpenRouterProvider(client=client).generate([{"role": "user", "content": "Hi"}])
+    response = OpenRouterProvider(client=client).generate(
+        [{"role": "user", "content": "Hi"}],
+        reasoning="max",
+    )
     assert response.content == "hello"
     assert response.usage["total_tokens"] == 3
+
+
+def test_openrouter_rejects_unknown_reasoning(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "secret")
+    with pytest.raises(ConfigError, match="OpenRouter reasoning"):
+        OpenRouterProvider().generate([{"role": "user", "content": "Hi"}], reasoning="turbo")
+
+
+def test_openrouter_error_includes_api_message(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "secret")
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            400,
+            json={"error": {"code": 400, "message": "Invalid reasoning effort"}},
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    with pytest.raises(ProviderError, match="Invalid reasoning effort"):
+        OpenRouterProvider(client=client).generate([{"role": "user", "content": "Hi"}])
+
+
+def test_openrouter_json_response_format_retries_without_structured_output(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "secret")
+    calls = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        calls.append(payload)
+        if "response_format" in payload:
+            return httpx.Response(
+                400,
+                json={"error": {"code": 400, "message": "response_format is not supported"}},
+            )
+        return httpx.Response(200, json={"choices": [{"message": {"content": "{\"ok\": true}"}}]})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    response = OpenRouterProvider(client=client).generate(
+        [{"role": "user", "content": "Return JSON"}],
+        response_format="json",
+    )
+    assert response.content == "{\"ok\": true}"
+    assert len(calls) == 2
+    assert "response_format" not in calls[1]
 
 
 def test_gigachat_generate_with_mock_http(monkeypatch):

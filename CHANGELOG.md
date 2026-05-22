@@ -4,6 +4,41 @@
 
 ### Что изменено
 
+- OpenRouter provider теперь мапит `reasoning: "max"` в допустимое для OpenRouter значение `xhigh`.
+- Ошибки OpenRouter теперь включают безопасное сообщение из JSON-ответа API вместо общего `400 Bad Request`.
+- JSON-запросы через OpenRouter автоматически повторяются без `response_format`, если модель не поддерживает structured output.
+- Добавлены unit-тесты на reasoning mapping, подробные ошибки OpenRouter и retry без structured output.
+
+### Для чего это нужно
+
+- Модель `deepseek/deepseek-v4-flash` может возвращать `400` на неподдерживаемые параметры, и теперь CLI корректно обходит типичные причины.
+- Пользователь видит реальную причину ошибки OpenRouter без раскрытия ключей.
+
+### Почему это сделано именно так
+
+- `max` сохранён как удобный пользовательский alias, но наружу отправляется совместимое значение.
+- Retry без `response_format` включается только для JSON-запросов, чтобы не менять обычные текстовые вызовы.
+
+### Затронутые файлы
+
+- `prompt_evolve/providers.py`
+- `tests/unit/test_providers_llm.py`
+- `docs/quick_usage_ru.md`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+
+### Риски
+
+- Если OpenRouter возвращает `400` по другой причине, retry без `response_format` не исправит саму причину, но сообщение ошибки станет понятнее.
+
+## 2026-05-22 — Commit: pending
+
+### Что изменено
+
 - Добавлена встроенная универсальная задача апгрейда промпта `DEFAULT_PROMPT_UPGRADE_TASK`.
 - Команды `run`, `evaluate` и `workbench` теперь могут работать с Python/YAML config, где указан только `prompt`, без отдельного `task`.
 - Добавлен обезличенный пример `examples/prompt_only_project.py`: для обычного сценария нужно менять только `RAW_PROMPT` и настройки.

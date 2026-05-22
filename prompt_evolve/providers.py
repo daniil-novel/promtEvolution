@@ -17,6 +17,14 @@ class ProviderError(RuntimeError):
     """Raised when provider communication fails."""
 
 
+OPENROUTER_REASONING_ALIASES = {
+    "max": "xhigh",
+    "maximum": "xhigh",
+}
+
+OPENROUTER_REASONING_EFFORTS = {"xhigh", "high", "medium", "low", "minimal", "none"}
+
+
 def _is_missing_secret(value: str | None) -> bool:
     if value is None:
         return True
@@ -25,6 +33,32 @@ def _is_missing_secret(value: str | None) -> bool:
         return True
     lowered = normalized.lower()
     return lowered.startswith("paste_") or lowered.startswith("your_")
+
+
+def _openrouter_reasoning(reasoning: str | None) -> dict[str, str] | None:
+    if not reasoning:
+        return None
+    effort = OPENROUTER_REASONING_ALIASES.get(reasoning.strip().lower(), reasoning.strip().lower())
+    if effort not in OPENROUTER_REASONING_EFFORTS:
+        raise ConfigError(
+            "OpenRouter reasoning must be one of: xhigh, high, medium, low, minimal, none."
+        )
+    if effort == "none":
+        return None
+    return {"effort": effort}
+
+
+def _safe_error_message(response: httpx.Response) -> str:
+    try:
+        data = response.json()
+    except ValueError:
+        text = response.text.strip()
+        return text[:500] if text else response.reason_phrase
+    error = data.get("error") if isinstance(data, dict) else None
+    if isinstance(error, dict):
+        message = error.get("message") or error.get("status") or error
+        return str(message)[:500]
+    return json.dumps(data, ensure_ascii=False)[:500]
 
 
 @dataclass
@@ -41,6 +75,29 @@ class OpenRouterProvider:
                 f"OpenRouter API key is missing. Set {self.api_key_env} in .env or the shell."
             )
 
+    def _post_chat_completion(self, payload: dict[str, Any]) -> dict[str, Any]:
+        headers = {
+            "Authorization": f"Bearer {os.environ[self.api_key_env]}",
+            "Content-Type": "application/json",
+        }
+        client = self.client or httpx.Client(timeout=60)
+        try:
+            response = client.post(
+                f"{self.base_url.rstrip('/')}/chat/completions",
+                headers=headers,
+                json=payload,
+            )
+            if response.status_code >= 400:
+                detail = _safe_error_message(response)
+                raise ProviderError(
+                    f"OpenRouter request failed with HTTP {response.status_code}: {detail}"
+                )
+            return response.json()
+        except ProviderError:
+            raise
+        except httpx.HTTPError as exc:
+            raise ProviderError(f"OpenRouter request failed: {exc}") from exc
+
     def generate(
         self,
         messages: list[dict[str, str]],
@@ -54,25 +111,19 @@ class OpenRouterProvider:
             "model": model or self.default_model,
             "messages": messages,
         }
-        if reasoning:
-            payload["reasoning"] = {"effort": reasoning}
+        reasoning_payload = _openrouter_reasoning(reasoning)
+        if reasoning_payload:
+            payload["reasoning"] = reasoning_payload
         if response_format == "json":
             payload["response_format"] = {"type": "json_object"}
-        headers = {
-            "Authorization": f"Bearer {os.environ[self.api_key_env]}",
-            "Content-Type": "application/json",
-        }
-        client = self.client or httpx.Client(timeout=60)
         try:
-            response = client.post(
-                f"{self.base_url.rstrip('/')}/chat/completions",
-                headers=headers,
-                json=payload,
-            )
-            response.raise_for_status()
-            data = response.json()
-        except httpx.HTTPError as exc:
-            raise ProviderError(f"OpenRouter request failed: {exc}") from exc
+            data = self._post_chat_completion(payload)
+        except ProviderError:
+            if response_format != "json" or "response_format" not in payload:
+                raise
+            fallback_payload = dict(payload)
+            fallback_payload.pop("response_format", None)
+            data = self._post_chat_completion(fallback_payload)
         content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
         return LLMResponse(content=content, usage=data.get("usage") or {}, raw=data)
 

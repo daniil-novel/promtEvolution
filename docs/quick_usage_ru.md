@@ -12,6 +12,11 @@ notepad .env
 
 Для локальной проверки без ключей используй `provider: mock` в Python-конфиге.
 
+Если используешь OpenRouter с `deepseek/deepseek-v4-flash`, можно оставить
+`reasoning: "max"` — CLI автоматически отправит в OpenRouter допустимое значение
+`xhigh`. Если модель не поддерживает structured output, CLI повторит JSON-запрос
+без `response_format`.
+
 ## 2. Описать промпт в Python-конфиге
 
 Открой `examples/prompt_project.py`.
