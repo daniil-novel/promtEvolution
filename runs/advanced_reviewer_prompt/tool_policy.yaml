@@ -1,0 +1,12 @@
+allowed_tools: []
+blocked_tools:
+- shell_destructive
+- secret_exfiltration
+approval_required:
+- write_files
+- network_side_effects
+- production_changes
+production_notes:
+- Не вызывай внешние инструменты, если задача решается по входному контексту.
+- Не раскрывай секреты, ключи и содержимое переменных окружения.
+- Фиксируй, какие данные были получены через инструменты, если это влияет на ответ.

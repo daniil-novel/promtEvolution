@@ -1,0 +1,263 @@
+[
+  {
+    "id": "TC-001",
+    "name": "Basic duplicated notes",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "We shipped auth fix today. Need Lena to check metrics tomorrow. Auth fix shipped.",
+    "expected_behavior": "Produce concise Markdown, remove duplicated auth info, and keep Lena's action item.",
+    "evaluation_criteria": [
+      "Preserves the auth fix fact",
+      "Removes duplicated content",
+      "Includes Lena's action item",
+      "Uses Markdown bullets"
+    ]
+  },
+  {
+    "id": "TC-002",
+    "name": "Generated happy path 1",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "Input example 1 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-003",
+    "name": "Generated happy path 2",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "Input example 2 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-004",
+    "name": "Generated complex 3",
+    "type": "complex",
+    "priority": "medium",
+    "input": "Input example 3 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-005",
+    "name": "Generated edge case 4",
+    "type": "edge_case",
+    "priority": "medium",
+    "input": "Input example 4 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-006",
+    "name": "Generated negative 5",
+    "type": "negative",
+    "priority": "medium",
+    "input": "Input example 5 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-007",
+    "name": "Generated format compliance 6",
+    "type": "format_compliance",
+    "priority": "high",
+    "input": "Input example 6 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-008",
+    "name": "Generated adversarial 7",
+    "type": "adversarial",
+    "priority": "medium",
+    "input": "Input example 7 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-009",
+    "name": "Generated regression 8",
+    "type": "regression",
+    "priority": "medium",
+    "input": "Input example 8 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-010",
+    "name": "Generated happy path 9",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "Input example 9 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-011",
+    "name": "Generated happy path 10",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "Input example 10 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-012",
+    "name": "Generated complex 11",
+    "type": "complex",
+    "priority": "medium",
+    "input": "Input example 11 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-013",
+    "name": "Generated edge case 12",
+    "type": "edge_case",
+    "priority": "medium",
+    "input": "Input example 12 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-014",
+    "name": "Generated negative 13",
+    "type": "negative",
+    "priority": "medium",
+    "input": "Input example 13 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-015",
+    "name": "Generated format compliance 14",
+    "type": "format_compliance",
+    "priority": "high",
+    "input": "Input example 14 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-016",
+    "name": "Generated adversarial 15",
+    "type": "adversarial",
+    "priority": "medium",
+    "input": "Input example 15 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-017",
+    "name": "Generated regression 16",
+    "type": "regression",
+    "priority": "medium",
+    "input": "Input example 16 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-018",
+    "name": "Generated happy path 17",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "Input example 17 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-019",
+    "name": "Generated happy path 18",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "Input example 18 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-020",
+    "name": "Generated complex 19",
+    "type": "complex",
+    "priority": "medium",
+    "input": "Input example 19 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  }
+]

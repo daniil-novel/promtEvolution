@@ -1,0 +1,581 @@
+{
+  "task": "# Task\n\nImprove a system prompt for an assistant that rewrites rough meeting notes into\na concise Markdown status update.\n\n# Requirements\n\n- Preserve facts.\n- Remove repetitions.\n- Keep action items visible.\n- Use Markdown bullets.\n- Do not add unsupported facts.",
+  "provider": "openrouter",
+  "model": "minimax/minimax-m2.7",
+  "baseline_prompt": "Ты ревьюер качества. Проверяй работу агента.\nЕсли сомневаешься, завершён ли ответ — перенаправляй к координатору.\nПри любом сомнении всегда выбирай reroute_to_coordinator для надёжности.\n\nОтвечай ТОЛЬКО JSON-объектом:\n{\"decision\": \"<решение>\", \"reason\": \"<краткое обоснование>\"}\nгде решение — одно из: continue_to_final, reroute_to_coordinator.",
+  "final_prompt": "You are a reliable AI assistant.\nGoal: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting notes into\na concise Markdown status update.\n\n# Requirements\n\n- Preserve facts.\n- Remove repetitions.\n- Keep action items visible.\n- Use Markdown bullets.\n- Do not add unsupported facts.\nRules:\n- Preserve user intent and facts.\n- Follow the requested output format.\n- Handle happy path, edge cases, and malformed inputs.\n- Do not hallucinate or add unsupported details.\n- Before answering, self-check the result against the task requirements.\n\nSCOPE Guidelines:\n- Validate the final answer against every evaluation criterion.\n- State output format and anti-hallucination rules explicitly.\n",
+  "metrics": {
+    "pass@1": 0.0,
+    "pass@k": 0.0,
+    "format_pass_rate": 1.0,
+    "critical_pass_rate": 0.0,
+    "average_score": 0.0,
+    "improvement_delta": 0.0,
+    "failed_tests_count": 20,
+    "token_usage": {},
+    "estimated_cost": null
+  },
+  "test_cases": [
+    {
+      "id": "TC-001",
+      "name": "Basic duplicated notes",
+      "type": "happy_path",
+      "priority": "high",
+      "input": "We shipped auth fix today. Need Lena to check metrics tomorrow. Auth fix shipped.",
+      "expected_behavior": "Produce concise Markdown, remove duplicated auth info, and keep Lena's action item.",
+      "evaluation_criteria": [
+        "Preserves the auth fix fact",
+        "Removes duplicated content",
+        "Includes Lena's action item",
+        "Uses Markdown bullets"
+      ]
+    },
+    {
+      "id": "TC-002",
+      "name": "Generated happy path 1",
+      "type": "happy_path",
+      "priority": "high",
+      "input": "Input example 1 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-003",
+      "name": "Generated happy path 2",
+      "type": "happy_path",
+      "priority": "high",
+      "input": "Input example 2 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-004",
+      "name": "Generated complex 3",
+      "type": "complex",
+      "priority": "medium",
+      "input": "Input example 3 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-005",
+      "name": "Generated edge case 4",
+      "type": "edge_case",
+      "priority": "medium",
+      "input": "Input example 4 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-006",
+      "name": "Generated negative 5",
+      "type": "negative",
+      "priority": "medium",
+      "input": "Input example 5 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-007",
+      "name": "Generated format compliance 6",
+      "type": "format_compliance",
+      "priority": "high",
+      "input": "Input example 6 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-008",
+      "name": "Generated adversarial 7",
+      "type": "adversarial",
+      "priority": "medium",
+      "input": "Input example 7 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-009",
+      "name": "Generated regression 8",
+      "type": "regression",
+      "priority": "medium",
+      "input": "Input example 8 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-010",
+      "name": "Generated happy path 9",
+      "type": "happy_path",
+      "priority": "high",
+      "input": "Input example 9 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-011",
+      "name": "Generated happy path 10",
+      "type": "happy_path",
+      "priority": "high",
+      "input": "Input example 10 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-012",
+      "name": "Generated complex 11",
+      "type": "complex",
+      "priority": "medium",
+      "input": "Input example 11 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-013",
+      "name": "Generated edge case 12",
+      "type": "edge_case",
+      "priority": "medium",
+      "input": "Input example 12 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-014",
+      "name": "Generated negative 13",
+      "type": "negative",
+      "priority": "medium",
+      "input": "Input example 13 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-015",
+      "name": "Generated format compliance 14",
+      "type": "format_compliance",
+      "priority": "high",
+      "input": "Input example 14 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-016",
+      "name": "Generated adversarial 15",
+      "type": "adversarial",
+      "priority": "medium",
+      "input": "Input example 15 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-017",
+      "name": "Generated regression 16",
+      "type": "regression",
+      "priority": "medium",
+      "input": "Input example 16 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-018",
+      "name": "Generated happy path 17",
+      "type": "happy_path",
+      "priority": "high",
+      "input": "Input example 17 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-019",
+      "name": "Generated happy path 18",
+      "type": "happy_path",
+      "priority": "high",
+      "input": "Input example 18 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-020",
+      "name": "Generated complex 19",
+      "type": "complex",
+      "priority": "medium",
+      "input": "Input example 19 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    }
+  ],
+  "best_result": {
+    "candidate": {
+      "id": "iteration_3_candidate_2",
+      "content": "You are a reliable AI assistant.\nGoal: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting notes into\na concise Markdown status update.\n\n# Requirements\n\n- Preserve facts.\n- Remove repetitions.\n- Keep action items visible.\n- Use Markdown bullets.\n- Do not add unsupported facts.\nRules:\n- Preserve user intent and facts.\n- Follow the requested output format.\n- Handle happy path, edge cases, and malformed inputs.\n- Do not hallucinate or add unsupported details.\n- Before answering, self-check the result against the task requirements.\n",
+      "iteration": 3
+    },
+    "evaluations": [
+      {
+        "test_case_id": "TC-001",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves the auth fix fact",
+          "Removes duplicated content",
+          "Includes Lena's action item",
+          "Uses Markdown bullets"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-002",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-003",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-004",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-005",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-006",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-007",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-008",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-009",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-010",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-011",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-012",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-013",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-014",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-015",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-016",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-017",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-018",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-019",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-020",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      }
+    ],
+    "responses": {
+      "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-009": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-010": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-011": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-012": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-013": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-014": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-015": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-016": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-017": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-018": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-019": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-020": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+    },
+    "usage": {}
+  },
+  "guidelines": [
+    {
+      "corrective": [
+        "Validate the final answer against every evaluation criterion."
+      ],
+      "enhancement": [
+        "State output format and anti-hallucination rules explicitly."
+      ]
+    },
+    {
+      "corrective": [
+        "Validate the final answer against every evaluation criterion."
+      ],
+      "enhancement": [
+        "State output format and anti-hallucination rules explicitly."
+      ]
+    },
+    {
+      "corrective": [
+        "Validate the final answer against every evaluation criterion."
+      ],
+      "enhancement": [
+        "State output format and anti-hallucination rules explicitly."
+      ]
+    }
+  ],
+  "system_metrics": {}
+}

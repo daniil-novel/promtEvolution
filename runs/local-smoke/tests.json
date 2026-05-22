@@ -1,0 +1,27 @@
+[
+  {
+    "id": "TC-001",
+    "name": "Generated happy path",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "Summarize duplicated status notes.",
+    "expected_behavior": "Return concise Markdown and preserve action items.",
+    "evaluation_criteria": [
+      "Uses Markdown",
+      "Preserves action items"
+    ]
+  },
+  {
+    "id": "TC-002",
+    "name": "Generated happy path 2",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "Input example 2 for: # Task\n\nCreate a system prompt for an assistant that rewrites rough meeting note",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  }
+]

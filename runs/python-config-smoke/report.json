@@ -1,0 +1,137 @@
+{
+  "task": "# Task\n\nImprove a system prompt for an assistant that rewrites rough meeting notes into\na concise Markdown status update.\n\n# Requirements\n\n- Preserve facts.\n- Remove repetitions.\n- Keep action items visible.\n- Use Markdown bullets.\n- Do not add unsupported facts.",
+  "provider": "mock",
+  "model": "mock",
+  "baseline_prompt": "You are a careful writing assistant. Rewrite rough notes into a concise Markdown\nstatus update. Preserve facts, remove repetition, and keep action items visible.",
+  "final_prompt": "You are a careful writing assistant. Rewrite rough notes into a concise Markdown\nstatus update. Preserve facts, remove repetition, and keep action items visible.\n\nSCOPE Guidelines:\n- Validate required format before answering.\n- Handle happy path and edge cases explicitly.\n",
+  "metrics": {
+    "pass@1": 1.0,
+    "pass@k": 1.0,
+    "format_pass_rate": 1.0,
+    "critical_pass_rate": 1.0,
+    "average_score": 0.95,
+    "improvement_delta": 0.0,
+    "failed_tests_count": 0,
+    "token_usage": {
+      "prompt_tokens": 80,
+      "completion_tokens": 80
+    },
+    "estimated_cost": null
+  },
+  "test_cases": [
+    {
+      "id": "TC-001",
+      "name": "Basic duplicated notes",
+      "type": "happy_path",
+      "priority": "high",
+      "input": "We shipped auth fix today. Need Lena to check metrics tomorrow. Auth fix shipped.",
+      "expected_behavior": "Produce concise Markdown, remove duplicated auth info, and keep Lena's action item.",
+      "evaluation_criteria": [
+        "Preserves the auth fix fact",
+        "Removes duplicated content",
+        "Includes Lena's action item",
+        "Uses Markdown bullets"
+      ]
+    },
+    {
+      "id": "TC-002",
+      "name": "Generated happy path",
+      "type": "happy_path",
+      "priority": "high",
+      "input": "Summarize duplicated status notes.",
+      "expected_behavior": "Return concise Markdown and preserve action items.",
+      "evaluation_criteria": [
+        "Uses Markdown",
+        "Preserves action items"
+      ]
+    },
+    {
+      "id": "TC-003",
+      "name": "Generated happy path 2",
+      "type": "happy_path",
+      "priority": "high",
+      "input": "Input example 2 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    },
+    {
+      "id": "TC-004",
+      "name": "Generated complex 3",
+      "type": "complex",
+      "priority": "medium",
+      "input": "Input example 3 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+      "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+      "evaluation_criteria": [
+        "Preserves user intent",
+        "Follows the requested format",
+        "Does not hallucinate"
+      ]
+    }
+  ],
+  "best_result": {
+    "candidate": {
+      "id": "iteration_1_baseline",
+      "content": "You are a careful writing assistant. Rewrite rough notes into a concise Markdown\nstatus update. Preserve facts, remove repetition, and keep action items visible.",
+      "iteration": 1
+    },
+    "evaluations": [
+      {
+        "test_case_id": "TC-001",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      },
+      {
+        "test_case_id": "TC-002",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      },
+      {
+        "test_case_id": "TC-003",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      },
+      {
+        "test_case_id": "TC-004",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      }
+    ],
+    "responses": {
+      "TC-001": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding.",
+      "TC-002": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding.",
+      "TC-003": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding.",
+      "TC-004": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding."
+    },
+    "usage": {
+      "prompt_tokens": 40,
+      "completion_tokens": 40
+    }
+  },
+  "guidelines": [
+    {
+      "corrective": [
+        "Validate required format before answering."
+      ],
+      "enhancement": [
+        "Handle happy path and edge cases explicitly."
+      ]
+    }
+  ],
+  "system_metrics": {}
+}

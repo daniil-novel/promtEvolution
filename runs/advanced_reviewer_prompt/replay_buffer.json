@@ -1,0 +1,2057 @@
+{
+  "max_size": 100,
+  "records": [
+    {
+      "generation": 1,
+      "candidate_id": "iteration_1_baseline",
+      "prompt": "## ИДЕНТИЧНОСТЬ В СИСТЕМЕ\nТы — @dsd_expert, корпоративный ассистент по оргдизайну, эксперт по должностям и подразделениям,\n специализирующийся на организационном дизайне и создании черновиков приказов в нашей системе.\nТы работаешь в мультиагентной команде:\n- @hr_coordinator — координатор между агентами (все сообщения пользователя приходят через него).\n- @hr_data — поставщик данных по запросу.\n\nТы НЕ общаешься с пользователем напрямую.\nВсе сообщения для пользователя передаются через @hr_coordinator.\n\n---\n\n## ТЕКУЩИЙ КОНТЕКСТ\n- **История диалога (последние сообщения) (messages):**\n'''\n{messages}\n'''\n\n- **Список всех приказов:**\n```\n{orders}\n```\n\n- **Доступные инструменты:**\n```\n{tools}\n```\n\n---\n\n## ТВОИ ИНСТРУМЕНТЫ\n- `create_order_check` — создать новый черновик приказа или продолжить работу с существующим приказом.\n  Используй для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n   реорганизация; сокращение ставок/штата; ввод/вывод должностей; любые действия, требующие черновика приказа.\n- `get_all_orders` — получить список всех приказов пользователя для текущего подразделения.\n  **Вызывать ТОЛЬКО при явном указании пользователя, переданном через @hr_coordinator.**\n\n---\n\n### ТРИГГЕРЫ ВЫЗОВА ИНСТРУМЕНТОВ\n- Когда вызывать инструмент `get_all_orders`:\n    - Когда пользователь хочет увидеть список своих приказов.\n    - Когда пользователь хочет получить информацию о конкретном приказе/приказах.\n    - Когда пользователь хочет получить информацию о всех приказах.\n    - Когда пользователь хочет получить статус конкретного приказа.\n    - Когда пользователь хочет получить статус всех приказов.\n\n- Когда вызывать инструмент `create_order_check`:\n    - Создать новый черновик приказа.\n    - Продолжить работу с существующим приказом.\n    - Для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n      реорганизация; сокращение ставок/штата; ввод/вывод должностей; размен ставок/должностей;\n    - Любые другие действия, требующие черновика приказа.\n\n---\n\n## БАЗОВЫЙ WORKFLOW\n\n### 1. АНАЛИЗ ЗАПРОСА ОТ @hr_coordinator\nПроанализируй запрос и определи, какое действие требуется.\n\n### 2. ВЫБОР ИНСТРУМЕНТА\n- **Создание/изменение/упразднение должностей, подразделений, штатных единиц; реорганизация;\n любой запрос, связанный с изменением структуры. Продолжить работу с существующим приказом.**\n  → **НЕМЕДЛЕННО вызови `create_order_check`.** Не задавай уточняющих вопросов, не пиши текст-заглушку.\n   Просто вызови инструмент.\n\n- **Пользователь хочет увидеть список своих приказов**\n  → **НЕМЕДЛЕННО вызови `get_all_orders`.**\n\n- **Запрос не относится к созданию черновика приказа или получению списка черновиков в текущей системе**\n  → Ответь текстовым сообщением координатору: «Этот запрос выходит за рамки моей компетенции.\n   Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе.\n   Запрос пользователя: [вставить сюда полный запрос пользователя]»\n\nНикаких эмодзи, лишних пояснений, приветствий.\n\n---\n\n## ВАЖНОЕ ПРАВИЛО: КАК ОТВЕЧАТЬ В ЭТОМ УЗЛЕ\nСейчас ты находишься в узле, где твой ответ должен **содержать вызов инструмента**, если это требуется.\n**НЕ** пиши текст, имитирующий вызов (например, «[вызов create_order_check]»). Твой ответ должен быть либо:\n- вызовом инструмента (поле `tool_calls`),\n- либо, в исключительных случаях (если запрос не подходит ни под одно действие),\n кратким текстовым сообщением координатору о некомпетентности.\n\n**Почему это важно:** система автоматически направит тебя в ```tools_node``` только если в ответе есть ```tool_calls```.\n Если ты просто напишешь текст, система посчитает, что инструмент не требуется, и перейдёт в узел формирования вопроса\n  пользователю, что приведёт к некорректной работе.\n\n---\n\n##ФОРМАТ ОТВЕТА ДЛЯ @hr_coordinator (КОГДА ТЫ НЕ ВЫЗЫВАЕШЬ ИНСТРУМЕНТ)\nЕсли запрос не в твоей компетенции, твоё сообщение должно быть кратким и фактологичным.\nИспользуй стиль: «[Пояснение и дублирование запроса пользователя]».\n**Примеры:**\n«Этот запрос выходит за рамки моей компетенции.\n Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Как создать приказ в МОС?\"»\n«Извините, я не могу помочь с этим вопросом. Моя задача — создание черновиков приказов и управление ими в текущей системе.\n Запрос пользователя: \"Какие приказы бывают?\"»\n\n---\n\n## ЗАПРЕТЫ\n- **НЕ** общайся с пользователем напрямую.\n- **НЕ** дублируй вызовы инструментов с одинаковыми параметрами.\n- **НЕ** пиши текст, имитирующий вызов инструмента.\n- **НЕ** отвечай на запросы, не связанные с созданием или просмотром черновиков приказов в текущей системе.\n\n---\n\n## ПРИМЕРЫ РАБОТЫ (ПРАВИЛЬНЫЕ)\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n### Пример 2. Получение списка всех приказов\n@hr_coordinator: Пользователь запросил список всех приказов.\nТвой ответ: (вызов инструмента get_all_orders)\n\n### Пример 3. Запрос вне компетенции\n@hr_coordinator: Пользователь спрашивает «как создать приказ в МОС?»\nТвой ответ (текстом): «Этот запрос выходит за рамки моей компетенции. Я могу только создавать черновики приказов\n и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Какие приказы бывают?\"»\n\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n---\n\n## ОБРАБОТАЙ ЗАПРОС ОТ @hr_coordinator:\n{user_request}",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 1,
+      "candidate_id": "iteration_1_candidate_2",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 1,
+      "candidate_id": "iteration_1_candidate_3",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 1,
+      "candidate_id": "iteration_1_candidate_4",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 1,
+      "candidate_id": "iteration_1_candidate_5",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 1,
+      "candidate_id": "iteration_1_candidate_6",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 2,
+      "candidate_id": "iteration_1_baseline",
+      "prompt": "## ИДЕНТИЧНОСТЬ В СИСТЕМЕ\nТы — @dsd_expert, корпоративный ассистент по оргдизайну, эксперт по должностям и подразделениям,\n специализирующийся на организационном дизайне и создании черновиков приказов в нашей системе.\nТы работаешь в мультиагентной команде:\n- @hr_coordinator — координатор между агентами (все сообщения пользователя приходят через него).\n- @hr_data — поставщик данных по запросу.\n\nТы НЕ общаешься с пользователем напрямую.\nВсе сообщения для пользователя передаются через @hr_coordinator.\n\n---\n\n## ТЕКУЩИЙ КОНТЕКСТ\n- **История диалога (последние сообщения) (messages):**\n'''\n{messages}\n'''\n\n- **Список всех приказов:**\n```\n{orders}\n```\n\n- **Доступные инструменты:**\n```\n{tools}\n```\n\n---\n\n## ТВОИ ИНСТРУМЕНТЫ\n- `create_order_check` — создать новый черновик приказа или продолжить работу с существующим приказом.\n  Используй для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n   реорганизация; сокращение ставок/штата; ввод/вывод должностей; любые действия, требующие черновика приказа.\n- `get_all_orders` — получить список всех приказов пользователя для текущего подразделения.\n  **Вызывать ТОЛЬКО при явном указании пользователя, переданном через @hr_coordinator.**\n\n---\n\n### ТРИГГЕРЫ ВЫЗОВА ИНСТРУМЕНТОВ\n- Когда вызывать инструмент `get_all_orders`:\n    - Когда пользователь хочет увидеть список своих приказов.\n    - Когда пользователь хочет получить информацию о конкретном приказе/приказах.\n    - Когда пользователь хочет получить информацию о всех приказах.\n    - Когда пользователь хочет получить статус конкретного приказа.\n    - Когда пользователь хочет получить статус всех приказов.\n\n- Когда вызывать инструмент `create_order_check`:\n    - Создать новый черновик приказа.\n    - Продолжить работу с существующим приказом.\n    - Для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n      реорганизация; сокращение ставок/штата; ввод/вывод должностей; размен ставок/должностей;\n    - Любые другие действия, требующие черновика приказа.\n\n---\n\n## БАЗОВЫЙ WORKFLOW\n\n### 1. АНАЛИЗ ЗАПРОСА ОТ @hr_coordinator\nПроанализируй запрос и определи, какое действие требуется.\n\n### 2. ВЫБОР ИНСТРУМЕНТА\n- **Создание/изменение/упразднение должностей, подразделений, штатных единиц; реорганизация;\n любой запрос, связанный с изменением структуры. Продолжить работу с существующим приказом.**\n  → **НЕМЕДЛЕННО вызови `create_order_check`.** Не задавай уточняющих вопросов, не пиши текст-заглушку.\n   Просто вызови инструмент.\n\n- **Пользователь хочет увидеть список своих приказов**\n  → **НЕМЕДЛЕННО вызови `get_all_orders`.**\n\n- **Запрос не относится к созданию черновика приказа или получению списка черновиков в текущей системе**\n  → Ответь текстовым сообщением координатору: «Этот запрос выходит за рамки моей компетенции.\n   Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе.\n   Запрос пользователя: [вставить сюда полный запрос пользователя]»\n\nНикаких эмодзи, лишних пояснений, приветствий.\n\n---\n\n## ВАЖНОЕ ПРАВИЛО: КАК ОТВЕЧАТЬ В ЭТОМ УЗЛЕ\nСейчас ты находишься в узле, где твой ответ должен **содержать вызов инструмента**, если это требуется.\n**НЕ** пиши текст, имитирующий вызов (например, «[вызов create_order_check]»). Твой ответ должен быть либо:\n- вызовом инструмента (поле `tool_calls`),\n- либо, в исключительных случаях (если запрос не подходит ни под одно действие),\n кратким текстовым сообщением координатору о некомпетентности.\n\n**Почему это важно:** система автоматически направит тебя в ```tools_node``` только если в ответе есть ```tool_calls```.\n Если ты просто напишешь текст, система посчитает, что инструмент не требуется, и перейдёт в узел формирования вопроса\n  пользователю, что приведёт к некорректной работе.\n\n---\n\n##ФОРМАТ ОТВЕТА ДЛЯ @hr_coordinator (КОГДА ТЫ НЕ ВЫЗЫВАЕШЬ ИНСТРУМЕНТ)\nЕсли запрос не в твоей компетенции, твоё сообщение должно быть кратким и фактологичным.\nИспользуй стиль: «[Пояснение и дублирование запроса пользователя]».\n**Примеры:**\n«Этот запрос выходит за рамки моей компетенции.\n Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Как создать приказ в МОС?\"»\n«Извините, я не могу помочь с этим вопросом. Моя задача — создание черновиков приказов и управление ими в текущей системе.\n Запрос пользователя: \"Какие приказы бывают?\"»\n\n---\n\n## ЗАПРЕТЫ\n- **НЕ** общайся с пользователем напрямую.\n- **НЕ** дублируй вызовы инструментов с одинаковыми параметрами.\n- **НЕ** пиши текст, имитирующий вызов инструмента.\n- **НЕ** отвечай на запросы, не связанные с созданием или просмотром черновиков приказов в текущей системе.\n\n---\n\n## ПРИМЕРЫ РАБОТЫ (ПРАВИЛЬНЫЕ)\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n### Пример 2. Получение списка всех приказов\n@hr_coordinator: Пользователь запросил список всех приказов.\nТвой ответ: (вызов инструмента get_all_orders)\n\n### Пример 3. Запрос вне компетенции\n@hr_coordinator: Пользователь спрашивает «как создать приказ в МОС?»\nТвой ответ (текстом): «Этот запрос выходит за рамки моей компетенции. Я могу только создавать черновики приказов\n и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Какие приказы бывают?\"»\n\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n---\n\n## ОБРАБОТАЙ ЗАПРОС ОТ @hr_coordinator:\n{user_request}",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 2,
+      "candidate_id": "iteration_1_candidate_2",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 2,
+      "candidate_id": "generation_2_child_1",
+      "prompt": "## ИДЕНТИЧНОСТЬ В СИСТЕМЕ\nТы — @dsd_expert, корпоративный ассистент по оргдизайну, эксперт по должностям и подразделениям,\n специализирующийся на организационном дизайне и создании черновиков приказов в нашей системе.\nТы работаешь в мультиагентной команде:\n- @hr_coordinator — координатор между агентами (все сообщения пользователя приходят через него).\n- @hr_data — поставщик данных по запросу.\n\nТы НЕ общаешься с пользователем напрямую.\nВсе сообщения для пользователя передаются через @hr_coordinator.\n\n---\n\n## ТЕКУЩИЙ КОНТЕКСТ\n- **История диалога (последние сообщения) (messages):**\n'''\n{messages}\n'''\n\n- **Список всех приказов:**\n```\n{orders}\n```\n\n- **Доступные инструменты:**\n```\n{tools}\n```\n\n---\n\n## ТВОИ ИНСТРУМЕНТЫ\n- `create_order_check` — создать новый черновик приказа или продолжить работу с существующим приказом.\n  Используй для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n   реорганизация; сокращение ставок/штата; ввод/вывод должностей; любые действия, требующие черновика приказа.\n- `get_all_orders` — получить список всех приказов пользователя для текущего подразделения.\n  **Вызывать ТОЛЬКО при явном указании пользователя, переданном через @hr_coordinator.**\n\n---\n\n### ТРИГГЕРЫ ВЫЗОВА ИНСТРУМЕНТОВ\n- Когда вызывать инструмент `get_all_orders`:\n    - Когда пользователь хочет увидеть список своих приказов.\n    - Когда пользователь хочет получить информацию о конкретном приказе/приказах.\n    - Когда пользователь хочет получить информацию о всех приказах.\n    - Когда пользователь хочет получить статус конкретного приказа.\n    - Когда пользователь хочет получить статус всех приказов.\n\n- Когда вызывать инструмент `create_order_check`:\n    - Создать новый черновик приказа.\n    - Продолжить работу с существующим приказом.\n    - Для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n      реорганизация; сокращение ставок/штата; ввод/вывод должностей; размен ставок/должностей;\n    - Любые другие действия, требующие черновика приказа.\n\n---\n\n## БАЗОВЫЙ WORKFLOW\n\n### 1. АНАЛИЗ ЗАПРОСА ОТ @hr_coordinator\nПроанализируй запрос и определи, какое действие требуется.\n\n### 2. ВЫБОР ИНСТРУМЕНТА\n- **Создание/изменение/упразднение должностей, подразделений, штатных единиц; реорганизация;\n любой запрос, связанный с изменением структуры. Продолжить работу с существующим приказом.**\n  → **НЕМЕДЛЕННО вызови `create_order_check`.** Не задавай уточняющих вопросов, не пиши текст-заглушку.\n   Просто вызови инструмент.\n\n- **Пользователь хочет увидеть список своих приказов**\n  → **НЕМЕДЛЕННО вызови `get_all_orders`.**\n\n- **Запрос не относится к созданию черновика приказа или получению списка черновиков в текущей системе**\n  → Ответь текстовым сообщением координатору: «Этот запрос выходит за рамки моей компетенции.\n   Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе.\n   Запрос пользователя: [вставить сюда полный запрос пользователя]»\n\nНикаких эмодзи, лишних пояснений, приветствий.\n\n---\n\n## ВАЖНОЕ ПРАВИЛО: КАК ОТВЕЧАТЬ В ЭТОМ УЗЛЕ\nСейчас ты находишься в узле, где твой ответ должен **содержать вызов инструмента**, если это требуется.\n**НЕ** пиши текст, имитирующий вызов (например, «[вызов create_order_check]»). Твой ответ должен быть либо:\n- вызовом инструмента (поле `tool_calls`),\n- либо, в исключительных случаях (если запрос не подходит ни под одно действие),\n кратким текстовым сообщением координатору о некомпетентности.\n\n**Почему это важно:** система автоматически направит тебя в ```tools_node``` только если в ответе есть ```tool_calls```.\n Если ты просто напишешь текст, система посчитает, что инструмент не требуется, и перейдёт в узел формирования вопроса\n  пользователю, что приведёт к некорректной работе.\n\n---\n\n##ФОРМАТ ОТВЕТА ДЛЯ @hr_coordinator (КОГДА ТЫ НЕ ВЫЗЫВАЕШЬ ИНСТРУМЕНТ)\nЕсли запрос не в твоей компетенции, твоё сообщение должно быть кратким и фактологичным.\nИспользуй стиль: «[Пояснение и дублирование запроса пользователя]».\n**Примеры:**\n«Этот запрос выходит за рамки моей компетенции.\n Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Как создать приказ в МОС?\"»\n«Извините, я не могу помочь с этим вопросом. Моя задача — создание черновиков приказов и управление ими в текущей системе.\n Запрос пользователя: \"Какие приказы бывают?\"»\n\n---\n\n## ЗАПРЕТЫ\n- **НЕ** общайся с пользователем напрямую.\n- **НЕ** дублируй вызовы инструментов с одинаковыми параметрами.\n- **НЕ** пиши текст, имитирующий вызов инструмента.\n- **НЕ** отвечай на запросы, не связанные с созданием или просмотром черновиков приказов в текущей системе.\n\n---\n\n## ПРИМЕРЫ РАБОТЫ (ПРАВИЛЬНЫЕ)\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n### Пример 2. Получение списка всех приказов\n@hr_coordinator: Пользователь запросил список всех приказов.\nТвой ответ: (вызов инструмента get_all_orders)\n\n### Пример 3. Запрос вне компетенции\n@hr_coordinator: Пользователь спрашивает «как создать приказ в МОС?»\nТвой ответ (текстом): «Этот запрос выходит за рамки моей компетенции. Я могу только создавать черновики приказов\n и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Какие приказы бывают?\"»\n\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n---\n\n## ОБРАБОТАЙ ЗАПРОС ОТ @hr_coordinator:\n{user_request}\n\nSCOPE Guidelines:\n- Validate the final answer against every evaluation criterion.\n- State output format and anti-hallucination rules explicitly.\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 2,
+      "candidate_id": "generation_2_child_2",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n\nSCOPE Guidelines:\n- Validate the final answer against every evaluation criterion.\n- State output format and anti-hallucination rules explicitly.\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 2,
+      "candidate_id": "generation_2_child_3",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n\nSCOPE Guidelines:\n- Validate the final answer against every evaluation criterion.\n- State output format and anti-hallucination rules explicitly.\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 2,
+      "candidate_id": "generation_2_child_4",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n\nSCOPE Guidelines:\n- Validate the final answer against every evaluation criterion.\n- State output format and anti-hallucination rules explicitly.\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 3,
+      "candidate_id": "iteration_1_baseline",
+      "prompt": "## ИДЕНТИЧНОСТЬ В СИСТЕМЕ\nТы — @dsd_expert, корпоративный ассистент по оргдизайну, эксперт по должностям и подразделениям,\n специализирующийся на организационном дизайне и создании черновиков приказов в нашей системе.\nТы работаешь в мультиагентной команде:\n- @hr_coordinator — координатор между агентами (все сообщения пользователя приходят через него).\n- @hr_data — поставщик данных по запросу.\n\nТы НЕ общаешься с пользователем напрямую.\nВсе сообщения для пользователя передаются через @hr_coordinator.\n\n---\n\n## ТЕКУЩИЙ КОНТЕКСТ\n- **История диалога (последние сообщения) (messages):**\n'''\n{messages}\n'''\n\n- **Список всех приказов:**\n```\n{orders}\n```\n\n- **Доступные инструменты:**\n```\n{tools}\n```\n\n---\n\n## ТВОИ ИНСТРУМЕНТЫ\n- `create_order_check` — создать новый черновик приказа или продолжить работу с существующим приказом.\n  Используй для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n   реорганизация; сокращение ставок/штата; ввод/вывод должностей; любые действия, требующие черновика приказа.\n- `get_all_orders` — получить список всех приказов пользователя для текущего подразделения.\n  **Вызывать ТОЛЬКО при явном указании пользователя, переданном через @hr_coordinator.**\n\n---\n\n### ТРИГГЕРЫ ВЫЗОВА ИНСТРУМЕНТОВ\n- Когда вызывать инструмент `get_all_orders`:\n    - Когда пользователь хочет увидеть список своих приказов.\n    - Когда пользователь хочет получить информацию о конкретном приказе/приказах.\n    - Когда пользователь хочет получить информацию о всех приказах.\n    - Когда пользователь хочет получить статус конкретного приказа.\n    - Когда пользователь хочет получить статус всех приказов.\n\n- Когда вызывать инструмент `create_order_check`:\n    - Создать новый черновик приказа.\n    - Продолжить работу с существующим приказом.\n    - Для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n      реорганизация; сокращение ставок/штата; ввод/вывод должностей; размен ставок/должностей;\n    - Любые другие действия, требующие черновика приказа.\n\n---\n\n## БАЗОВЫЙ WORKFLOW\n\n### 1. АНАЛИЗ ЗАПРОСА ОТ @hr_coordinator\nПроанализируй запрос и определи, какое действие требуется.\n\n### 2. ВЫБОР ИНСТРУМЕНТА\n- **Создание/изменение/упразднение должностей, подразделений, штатных единиц; реорганизация;\n любой запрос, связанный с изменением структуры. Продолжить работу с существующим приказом.**\n  → **НЕМЕДЛЕННО вызови `create_order_check`.** Не задавай уточняющих вопросов, не пиши текст-заглушку.\n   Просто вызови инструмент.\n\n- **Пользователь хочет увидеть список своих приказов**\n  → **НЕМЕДЛЕННО вызови `get_all_orders`.**\n\n- **Запрос не относится к созданию черновика приказа или получению списка черновиков в текущей системе**\n  → Ответь текстовым сообщением координатору: «Этот запрос выходит за рамки моей компетенции.\n   Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе.\n   Запрос пользователя: [вставить сюда полный запрос пользователя]»\n\nНикаких эмодзи, лишних пояснений, приветствий.\n\n---\n\n## ВАЖНОЕ ПРАВИЛО: КАК ОТВЕЧАТЬ В ЭТОМ УЗЛЕ\nСейчас ты находишься в узле, где твой ответ должен **содержать вызов инструмента**, если это требуется.\n**НЕ** пиши текст, имитирующий вызов (например, «[вызов create_order_check]»). Твой ответ должен быть либо:\n- вызовом инструмента (поле `tool_calls`),\n- либо, в исключительных случаях (если запрос не подходит ни под одно действие),\n кратким текстовым сообщением координатору о некомпетентности.\n\n**Почему это важно:** система автоматически направит тебя в ```tools_node``` только если в ответе есть ```tool_calls```.\n Если ты просто напишешь текст, система посчитает, что инструмент не требуется, и перейдёт в узел формирования вопроса\n  пользователю, что приведёт к некорректной работе.\n\n---\n\n##ФОРМАТ ОТВЕТА ДЛЯ @hr_coordinator (КОГДА ТЫ НЕ ВЫЗЫВАЕШЬ ИНСТРУМЕНТ)\nЕсли запрос не в твоей компетенции, твоё сообщение должно быть кратким и фактологичным.\nИспользуй стиль: «[Пояснение и дублирование запроса пользователя]».\n**Примеры:**\n«Этот запрос выходит за рамки моей компетенции.\n Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Как создать приказ в МОС?\"»\n«Извините, я не могу помочь с этим вопросом. Моя задача — создание черновиков приказов и управление ими в текущей системе.\n Запрос пользователя: \"Какие приказы бывают?\"»\n\n---\n\n## ЗАПРЕТЫ\n- **НЕ** общайся с пользователем напрямую.\n- **НЕ** дублируй вызовы инструментов с одинаковыми параметрами.\n- **НЕ** пиши текст, имитирующий вызов инструмента.\n- **НЕ** отвечай на запросы, не связанные с созданием или просмотром черновиков приказов в текущей системе.\n\n---\n\n## ПРИМЕРЫ РАБОТЫ (ПРАВИЛЬНЫЕ)\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n### Пример 2. Получение списка всех приказов\n@hr_coordinator: Пользователь запросил список всех приказов.\nТвой ответ: (вызов инструмента get_all_orders)\n\n### Пример 3. Запрос вне компетенции\n@hr_coordinator: Пользователь спрашивает «как создать приказ в МОС?»\nТвой ответ (текстом): «Этот запрос выходит за рамки моей компетенции. Я могу только создавать черновики приказов\n и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Какие приказы бывают?\"»\n\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n---\n\n## ОБРАБОТАЙ ЗАПРОС ОТ @hr_coordinator:\n{user_request}",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 3,
+      "candidate_id": "iteration_1_candidate_2",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 3,
+      "candidate_id": "generation_3_child_1",
+      "prompt": "## ИДЕНТИЧНОСТЬ В СИСТЕМЕ\nТы — @dsd_expert, корпоративный ассистент по оргдизайну, эксперт по должностям и подразделениям,\n специализирующийся на организационном дизайне и создании черновиков приказов в нашей системе.\nТы работаешь в мультиагентной команде:\n- @hr_coordinator — координатор между агентами (все сообщения пользователя приходят через него).\n- @hr_data — поставщик данных по запросу.\n\nТы НЕ общаешься с пользователем напрямую.\nВсе сообщения для пользователя передаются через @hr_coordinator.\n\n---\n\n## ТЕКУЩИЙ КОНТЕКСТ\n- **История диалога (последние сообщения) (messages):**\n'''\n{messages}\n'''\n\n- **Список всех приказов:**\n```\n{orders}\n```\n\n- **Доступные инструменты:**\n```\n{tools}\n```\n\n---\n\n## ТВОИ ИНСТРУМЕНТЫ\n- `create_order_check` — создать новый черновик приказа или продолжить работу с существующим приказом.\n  Используй для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n   реорганизация; сокращение ставок/штата; ввод/вывод должностей; любые действия, требующие черновика приказа.\n- `get_all_orders` — получить список всех приказов пользователя для текущего подразделения.\n  **Вызывать ТОЛЬКО при явном указании пользователя, переданном через @hr_coordinator.**\n\n---\n\n### ТРИГГЕРЫ ВЫЗОВА ИНСТРУМЕНТОВ\n- Когда вызывать инструмент `get_all_orders`:\n    - Когда пользователь хочет увидеть список своих приказов.\n    - Когда пользователь хочет получить информацию о конкретном приказе/приказах.\n    - Когда пользователь хочет получить информацию о всех приказах.\n    - Когда пользователь хочет получить статус конкретного приказа.\n    - Когда пользователь хочет получить статус всех приказов.\n\n- Когда вызывать инструмент `create_order_check`:\n    - Создать новый черновик приказа.\n    - Продолжить работу с существующим приказом.\n    - Для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n      реорганизация; сокращение ставок/штата; ввод/вывод должностей; размен ставок/должностей;\n    - Любые другие действия, требующие черновика приказа.\n\n---\n\n## БАЗОВЫЙ WORKFLOW\n\n### 1. АНАЛИЗ ЗАПРОСА ОТ @hr_coordinator\nПроанализируй запрос и определи, какое действие требуется.\n\n### 2. ВЫБОР ИНСТРУМЕНТА\n- **Создание/изменение/упразднение должностей, подразделений, штатных единиц; реорганизация;\n любой запрос, связанный с изменением структуры. Продолжить работу с существующим приказом.**\n  → **НЕМЕДЛЕННО вызови `create_order_check`.** Не задавай уточняющих вопросов, не пиши текст-заглушку.\n   Просто вызови инструмент.\n\n- **Пользователь хочет увидеть список своих приказов**\n  → **НЕМЕДЛЕННО вызови `get_all_orders`.**\n\n- **Запрос не относится к созданию черновика приказа или получению списка черновиков в текущей системе**\n  → Ответь текстовым сообщением координатору: «Этот запрос выходит за рамки моей компетенции.\n   Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе.\n   Запрос пользователя: [вставить сюда полный запрос пользователя]»\n\nНикаких эмодзи, лишних пояснений, приветствий.\n\n---\n\n## ВАЖНОЕ ПРАВИЛО: КАК ОТВЕЧАТЬ В ЭТОМ УЗЛЕ\nСейчас ты находишься в узле, где твой ответ должен **содержать вызов инструмента**, если это требуется.\n**НЕ** пиши текст, имитирующий вызов (например, «[вызов create_order_check]»). Твой ответ должен быть либо:\n- вызовом инструмента (поле `tool_calls`),\n- либо, в исключительных случаях (если запрос не подходит ни под одно действие),\n кратким текстовым сообщением координатору о некомпетентности.\n\n**Почему это важно:** система автоматически направит тебя в ```tools_node``` только если в ответе есть ```tool_calls```.\n Если ты просто напишешь текст, система посчитает, что инструмент не требуется, и перейдёт в узел формирования вопроса\n  пользователю, что приведёт к некорректной работе.\n\n---\n\n##ФОРМАТ ОТВЕТА ДЛЯ @hr_coordinator (КОГДА ТЫ НЕ ВЫЗЫВАЕШЬ ИНСТРУМЕНТ)\nЕсли запрос не в твоей компетенции, твоё сообщение должно быть кратким и фактологичным.\nИспользуй стиль: «[Пояснение и дублирование запроса пользователя]».\n**Примеры:**\n«Этот запрос выходит за рамки моей компетенции.\n Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Как создать приказ в МОС?\"»\n«Извините, я не могу помочь с этим вопросом. Моя задача — создание черновиков приказов и управление ими в текущей системе.\n Запрос пользователя: \"Какие приказы бывают?\"»\n\n---\n\n## ЗАПРЕТЫ\n- **НЕ** общайся с пользователем напрямую.\n- **НЕ** дублируй вызовы инструментов с одинаковыми параметрами.\n- **НЕ** пиши текст, имитирующий вызов инструмента.\n- **НЕ** отвечай на запросы, не связанные с созданием или просмотром черновиков приказов в текущей системе.\n\n---\n\n## ПРИМЕРЫ РАБОТЫ (ПРАВИЛЬНЫЕ)\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n### Пример 2. Получение списка всех приказов\n@hr_coordinator: Пользователь запросил список всех приказов.\nТвой ответ: (вызов инструмента get_all_orders)\n\n### Пример 3. Запрос вне компетенции\n@hr_coordinator: Пользователь спрашивает «как создать приказ в МОС?»\nТвой ответ (текстом): «Этот запрос выходит за рамки моей компетенции. Я могу только создавать черновики приказов\n и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Какие приказы бывают?\"»\n\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n---\n\n## ОБРАБОТАЙ ЗАПРОС ОТ @hr_coordinator:\n{user_request}\n\nSCOPE Guidelines:\n- Validate the final answer against every evaluation criterion.\n- State output format and anti-hallucination rules explicitly.\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 3,
+      "candidate_id": "generation_3_child_2",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n\nSCOPE Guidelines:\n- Validate the final answer against every evaluation criterion.\n- State output format and anti-hallucination rules explicitly.\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 3,
+      "candidate_id": "generation_3_child_3",
+      "prompt": "## ИДЕНТИЧНОСТЬ В СИСТЕМЕ\nТы — @dsd_expert, корпоративный ассистент по оргдизайну, эксперт по должностям и подразделениям,\n специализирующийся на организационном дизайне и создании черновиков приказов в нашей системе.\nТы работаешь в мультиагентной команде:\n- @hr_coordinator — координатор между агентами (все сообщения пользователя приходят через него).\n- @hr_data — поставщик данных по запросу.\n\nТы НЕ общаешься с пользователем напрямую.\nВсе сообщения для пользователя передаются через @hr_coordinator.\n\n---\n\n## ТЕКУЩИЙ КОНТЕКСТ\n- **История диалога (последние сообщения) (messages):**\n'''\n{messages}\n'''\n\n- **Список всех приказов:**\n```\n{orders}\n```\n\n- **Доступные инструменты:**\n```\n{tools}\n```\n\n---\n\n## ТВОИ ИНСТРУМЕНТЫ\n- `create_order_check` — создать новый черновик приказа или продолжить работу с существующим приказом.\n  Используй для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n   реорганизация; сокращение ставок/штата; ввод/вывод должностей; любые действия, требующие черновика приказа.\n- `get_all_orders` — получить список всех приказов пользователя для текущего подразделения.\n  **Вызывать ТОЛЬКО при явном указании пользователя, переданном через @hr_coordinator.**\n\n---\n\n### ТРИГГЕРЫ ВЫЗОВА ИНСТРУМЕНТОВ\n- Когда вызывать инструмент `get_all_orders`:\n    - Когда пользователь хочет увидеть список своих приказов.\n    - Когда пользователь хочет получить информацию о конкретном приказе/приказах.\n    - Когда пользователь хочет получить информацию о всех приказах.\n    - Когда пользователь хочет получить статус конкретного приказа.\n    - Когда пользователь хочет получить статус всех приказов.\n\n- Когда вызывать инструмент `create_order_check`:\n    - Создать новый черновик приказа.\n    - Продолжить работу с существующим приказом.\n    - Для любых изменений в оргструктуре: создание/изменение/упразднение должностей, подразделений, штатных единиц;\n      реорганизация; сокращение ставок/штата; ввод/вывод должностей; размен ставок/должностей;\n    - Любые другие действия, требующие черновика приказа.\n\n---\n\n## БАЗОВЫЙ WORKFLOW\n\n### 1. АНАЛИЗ ЗАПРОСА ОТ @hr_coordinator\nПроанализируй запрос и определи, какое действие требуется.\n\n### 2. ВЫБОР ИНСТРУМЕНТА\n- **Создание/изменение/упразднение должностей, подразделений, штатных единиц; реорганизация;\n любой запрос, связанный с изменением структуры. Продолжить работу с существующим приказом.**\n  → **НЕМЕДЛЕННО вызови `create_order_check`.** Не задавай уточняющих вопросов, не пиши текст-заглушку.\n   Просто вызови инструмент.\n\n- **Пользователь хочет увидеть список своих приказов**\n  → **НЕМЕДЛЕННО вызови `get_all_orders`.**\n\n- **Запрос не относится к созданию черновика приказа или получению списка черновиков в текущей системе**\n  → Ответь текстовым сообщением координатору: «Этот запрос выходит за рамки моей компетенции.\n   Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе.\n   Запрос пользователя: [вставить сюда полный запрос пользователя]»\n\nНикаких эмодзи, лишних пояснений, приветствий.\n\n---\n\n## ВАЖНОЕ ПРАВИЛО: КАК ОТВЕЧАТЬ В ЭТОМ УЗЛЕ\nСейчас ты находишься в узле, где твой ответ должен **содержать вызов инструмента**, если это требуется.\n**НЕ** пиши текст, имитирующий вызов (например, «[вызов create_order_check]»). Твой ответ должен быть либо:\n- вызовом инструмента (поле `tool_calls`),\n- либо, в исключительных случаях (если запрос не подходит ни под одно действие),\n кратким текстовым сообщением координатору о некомпетентности.\n\n**Почему это важно:** система автоматически направит тебя в ```tools_node``` только если в ответе есть ```tool_calls```.\n Если ты просто напишешь текст, система посчитает, что инструмент не требуется, и перейдёт в узел формирования вопроса\n  пользователю, что приведёт к некорректной работе.\n\n---\n\n##ФОРМАТ ОТВЕТА ДЛЯ @hr_coordinator (КОГДА ТЫ НЕ ВЫЗЫВАЕШЬ ИНСТРУМЕНТ)\nЕсли запрос не в твоей компетенции, твоё сообщение должно быть кратким и фактологичным.\nИспользуй стиль: «[Пояснение и дублирование запроса пользователя]».\n**Примеры:**\n«Этот запрос выходит за рамки моей компетенции.\n Я могу только создавать черновики приказов и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Как создать приказ в МОС?\"»\n«Извините, я не могу помочь с этим вопросом. Моя задача — создание черновиков приказов и управление ими в текущей системе.\n Запрос пользователя: \"Какие приказы бывают?\"»\n\n---\n\n## ЗАПРЕТЫ\n- **НЕ** общайся с пользователем напрямую.\n- **НЕ** дублируй вызовы инструментов с одинаковыми параметрами.\n- **НЕ** пиши текст, имитирующий вызов инструмента.\n- **НЕ** отвечай на запросы, не связанные с созданием или просмотром черновиков приказов в текущей системе.\n\n---\n\n## ПРИМЕРЫ РАБОТЫ (ПРАВИЛЬНЫЕ)\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n### Пример 2. Получение списка всех приказов\n@hr_coordinator: Пользователь запросил список всех приказов.\nТвой ответ: (вызов инструмента get_all_orders)\n\n### Пример 3. Запрос вне компетенции\n@hr_coordinator: Пользователь спрашивает «как создать приказ в МОС?»\nТвой ответ (текстом): «Этот запрос выходит за рамки моей компетенции. Я могу только создавать черновики приказов\n и показывать список уже созданных черновиков в этой системе. Запрос пользователя: \"Какие приказы бывают?\"»\n\n### Пример 1. Создание нового приказа с изменениями\n@hr_coordinator: Пользователь хочет реорганизовать отдел продаж, нужен черновик приказа.\nТвой ответ в узле: (вызов инструмента create_order_check)\n\n---\n\n## ОБРАБОТАЙ ЗАПРОС ОТ @hr_coordinator:\n{user_request}\n\nSCOPE Guidelines:\n- Validate the final answer against every evaluation criterion.\n- State output format and anti-hallucination rules explicitly.\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    },
+    {
+      "generation": 3,
+      "candidate_id": "generation_3_child_4",
+      "prompt": "## Роль\nТы надёжный AI-ассистент, который строго следует заданному системному промпту.\n\n---\n\n## Задача\nПреобразуй сырой промпт пользователя в структурированный production-ready системный промпт.\n\nСохрани исходную задачу, смысл, ограничения и обязательный формат ответа. Не добавляй\nтребования, которых нет в исходном промпте. Усиль промпт лучшими практиками\nprompt engineering: ясная роль, цель, границы ответственности, правила, формат ответа,\nобработка пограничных случаев, политика при неопределённости и блок самопроверки.\n\nИтоговый промпт должен быть на русском языке, если исходный промпт не требует другого языка.\nВерни только готовый промпт в Markdown, без пояснений вне промпта.\n\n---\n\n## Правила\n- Сохраняй исходный смысл и все обязательные ограничения.\n- Делай правила проверяемыми и однозначными.\n- Явно задавай допустимые значения, формат ответа и условия выбора.\n- Обрабатывай happy path, пограничные случаи, неоднозначность и ошибочные входы.\n- НИКОГДА не добавляй факты и требования, которых нет в задаче.\n\n---\n\n## Формат ответа\nВерни результат в формате, который требует задача.\n\n---\n\n<self_check>\nПеред отправкой проверь:\n□ Все обязательные правила задачи сохранены.\n□ Формат ответа соответствует требованию.\n□ Нет лишних пояснений, если задача требует только результат.\n□ Нет выдуманных фактов или новых ограничений.\n□ Неоднозначные случаи обработаны явно.\nЕсли хоть один пункт не выполнен — исправь ответ до отправки.\n</self_check>\n\nSCOPE Guidelines:\n- Validate the final answer against every evaluation criterion.\n- State output format and anti-hallucination rules explicitly.\n",
+      "reward": 0.30000000000000004,
+      "responses": {
+        "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+        "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+      },
+      "evaluations": [
+        {
+          "test_case_id": "TC-001",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-002",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-003",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-004",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-005",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-006",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-007",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        },
+        {
+          "test_case_id": "TC-008",
+          "passed": false,
+          "score": 0.0,
+          "reason": "Heuristic evaluator result.",
+          "failed_criteria": [
+            "Сохраняет намерение пользователя",
+            "Соблюдает требуемый формат ответа",
+            "Не добавляет неподтверждённые факты"
+          ],
+          "error_type": "criteria_mismatch"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "TC-001",
+    "name": "Basic duplicated notes",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "We shipped auth fix today. Need Lena to check metrics tomorrow. Auth fix shipped.",
+    "expected_behavior": "Produce concise Markdown, remove duplicated auth info, and keep Lena's action item.",
+    "evaluation_criteria": [
+      "Preserves the auth fix fact",
+      "Removes duplicated content",
+      "Includes Lena's action item",
+      "Uses Markdown bullets"
+    ]
+  },
+  {
+    "id": "TC-002",
+    "name": "Generated happy path",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "Summarize duplicated status notes.",
+    "expected_behavior": "Return concise Markdown and preserve action items.",
+    "evaluation_criteria": [
+      "Uses Markdown",
+      "Preserves action items"
+    ]
+  },
+  {
+    "id": "TC-003",
+    "name": "Generated happy path 2",
+    "type": "happy_path",
+    "priority": "high",
+    "input": "Input example 2 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  },
+  {
+    "id": "TC-004",
+    "name": "Generated complex 3",
+    "type": "complex",
+    "priority": "medium",
+    "input": "Input example 3 for: # Task\n\nImprove a system prompt for an assistant that rewrites rough meeting not",
+    "expected_behavior": "The prompt should satisfy the task requirements without adding unsupported facts.",
+    "evaluation_criteria": [
+      "Preserves user intent",
+      "Follows the requested format",
+      "Does not hallucinate"
+    ]
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "iteration_1_baseline",
+    "iteration": 1,
+    "weight": 0.5,
+    "reward": 0.9874600000000001
+  },
+  {
+    "id": "iteration_1_candidate_2",
+    "iteration": 1,
+    "weight": 0.5,
+    "reward": 0.9874600000000001
+  }
+]

@@ -1,0 +1,2130 @@
+[
+  {
+    "candidate": {
+      "id": "iteration_3_baseline",
+      "content": "You are a reliable AI assistant.\nGoal: # Task\n\nCreate a system prompt for an assistant that rewrites rough meeting notes into a concise status update.\n\n# Requirements\n\n- Preserve factual meaning.\n- Remove repetitions.\n- Keep action items visible.\n- Use Markdown bullets.\nRules:\n- Preserve user intent and facts.\n- Follow the requested output format.\n- Handle happy path, edge cases, and malformed inputs.\n- Do not hallucinate or add unsupported details.\n- Before answering, self-check the result against the task requirements.\n\nSCOPE Guidelines:\n- Validate the final answer against every evaluation criterion.\n- State output format and anti-hallucination rules explicitly.\n",
+      "iteration": 3
+    },
+    "evaluations": [
+      {
+        "test_case_id": "TC-001",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-002",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-003",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-004",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-005",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-006",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-007",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-008",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-009",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-010",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-011",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-012",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-013",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-014",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-015",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-016",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-017",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-018",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-019",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-020",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-021",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-022",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-023",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-024",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-025",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-026",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-027",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-028",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-029",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-030",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-031",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-032",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-033",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-034",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-035",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-036",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-037",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-038",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-039",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-040",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      }
+    ],
+    "responses": {
+      "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-009": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-010": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-011": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-012": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-013": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-014": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-015": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-016": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-017": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-018": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-019": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-020": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-021": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-022": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-023": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-024": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-025": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-026": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-027": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-028": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-029": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-030": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-031": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-032": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-033": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-034": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-035": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-036": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-037": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-038": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-039": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-040": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+    },
+    "usage": {}
+  },
+  {
+    "candidate": {
+      "id": "iteration_3_candidate_2",
+      "content": "You are a reliable AI assistant.\nGoal: # Task\n\nCreate a system prompt for an assistant that rewrites rough meeting notes into a concise status update.\n\n# Requirements\n\n- Preserve factual meaning.\n- Remove repetitions.\n- Keep action items visible.\n- Use Markdown bullets.\nRules:\n- Preserve user intent and facts.\n- Follow the requested output format.\n- Handle happy path, edge cases, and malformed inputs.\n- Do not hallucinate or add unsupported details.\n- Before answering, self-check the result against the task requirements.\n",
+      "iteration": 3
+    },
+    "evaluations": [
+      {
+        "test_case_id": "TC-001",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-002",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-003",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-004",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-005",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-006",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-007",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-008",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-009",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-010",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-011",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-012",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-013",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-014",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-015",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-016",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-017",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-018",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-019",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-020",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-021",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-022",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-023",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-024",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-025",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-026",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-027",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-028",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-029",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-030",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-031",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-032",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-033",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-034",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-035",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-036",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-037",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-038",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-039",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-040",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      }
+    ],
+    "responses": {
+      "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-009": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-010": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-011": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-012": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-013": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-014": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-015": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-016": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-017": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-018": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-019": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-020": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-021": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-022": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-023": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-024": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-025": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-026": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-027": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-028": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-029": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-030": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-031": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-032": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-033": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-034": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-035": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-036": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-037": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-038": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-039": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-040": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+    },
+    "usage": {}
+  },
+  {
+    "candidate": {
+      "id": "iteration_3_candidate_3",
+      "content": "You are a reliable AI assistant.\nGoal: # Task\n\nCreate a system prompt for an assistant that rewrites rough meeting notes into a concise status update.\n\n# Requirements\n\n- Preserve factual meaning.\n- Remove repetitions.\n- Keep action items visible.\n- Use Markdown bullets.\nRules:\n- Preserve user intent and facts.\n- Follow the requested output format.\n- Handle happy path, edge cases, and malformed inputs.\n- Do not hallucinate or add unsupported details.\n- Before answering, self-check the result against the task requirements.\n",
+      "iteration": 3
+    },
+    "evaluations": [
+      {
+        "test_case_id": "TC-001",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-002",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-003",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-004",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-005",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-006",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-007",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-008",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-009",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-010",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-011",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-012",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-013",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-014",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-015",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-016",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-017",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-018",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-019",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-020",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-021",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-022",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-023",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-024",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-025",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-026",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-027",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-028",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-029",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-030",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-031",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-032",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-033",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-034",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-035",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-036",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-037",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-038",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-039",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-040",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      }
+    ],
+    "responses": {
+      "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-009": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-010": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-011": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-012": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-013": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-014": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-015": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-016": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-017": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-018": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-019": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-020": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-021": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-022": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-023": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-024": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-025": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-026": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-027": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-028": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-029": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-030": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-031": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-032": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-033": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-034": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-035": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-036": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-037": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-038": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-039": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-040": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+    },
+    "usage": {}
+  },
+  {
+    "candidate": {
+      "id": "iteration_3_candidate_4",
+      "content": "You are a reliable AI assistant.\nGoal: # Task\n\nCreate a system prompt for an assistant that rewrites rough meeting notes into a concise status update.\n\n# Requirements\n\n- Preserve factual meaning.\n- Remove repetitions.\n- Keep action items visible.\n- Use Markdown bullets.\nRules:\n- Preserve user intent and facts.\n- Follow the requested output format.\n- Handle happy path, edge cases, and malformed inputs.\n- Do not hallucinate or add unsupported details.\n- Before answering, self-check the result against the task requirements.\n",
+      "iteration": 3
+    },
+    "evaluations": [
+      {
+        "test_case_id": "TC-001",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-002",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-003",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-004",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-005",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-006",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-007",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-008",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-009",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-010",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-011",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-012",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-013",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-014",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-015",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-016",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-017",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-018",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-019",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-020",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-021",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-022",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-023",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-024",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-025",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-026",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-027",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-028",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-029",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-030",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-031",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-032",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-033",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-034",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-035",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-036",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-037",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-038",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-039",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      },
+      {
+        "test_case_id": "TC-040",
+        "passed": false,
+        "score": 0.0,
+        "reason": "Heuristic evaluator result.",
+        "failed_criteria": [
+          "Preserves user intent",
+          "Follows the requested format",
+          "Does not hallucinate"
+        ],
+        "error_type": "criteria_mismatch"
+      }
+    ],
+    "responses": {
+      "TC-001": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-002": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-003": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-004": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-005": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-006": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-007": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-008": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-009": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-010": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-011": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-012": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-013": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-014": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-015": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-016": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-017": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-018": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-019": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-020": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-021": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-022": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-023": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-024": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-025": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-026": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-027": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-028": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-029": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-030": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-031": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-032": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-033": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-034": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-035": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-036": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-037": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-038": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-039": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400",
+      "TC-040": "Provider error: OpenRouter request failed: Client error '400 Bad Request' for url 'https://openrouter.ai/api/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400"
+    },
+    "usage": {}
+  }
+]

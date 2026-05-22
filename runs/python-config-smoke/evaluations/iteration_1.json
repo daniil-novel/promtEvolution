@@ -1,0 +1,104 @@
+[
+  {
+    "candidate": {
+      "id": "iteration_1_baseline",
+      "content": "You are a careful writing assistant. Rewrite rough notes into a concise Markdown\nstatus update. Preserve facts, remove repetition, and keep action items visible.",
+      "iteration": 1
+    },
+    "evaluations": [
+      {
+        "test_case_id": "TC-001",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      },
+      {
+        "test_case_id": "TC-002",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      },
+      {
+        "test_case_id": "TC-003",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      },
+      {
+        "test_case_id": "TC-004",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      }
+    ],
+    "responses": {
+      "TC-001": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding.",
+      "TC-002": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding.",
+      "TC-003": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding.",
+      "TC-004": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding."
+    },
+    "usage": {
+      "prompt_tokens": 40,
+      "completion_tokens": 40
+    }
+  },
+  {
+    "candidate": {
+      "id": "iteration_1_candidate_2",
+      "content": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding.",
+      "iteration": 1
+    },
+    "evaluations": [
+      {
+        "test_case_id": "TC-001",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      },
+      {
+        "test_case_id": "TC-002",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      },
+      {
+        "test_case_id": "TC-003",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      },
+      {
+        "test_case_id": "TC-004",
+        "passed": true,
+        "score": 0.95,
+        "reason": "Mock response satisfies the criteria.",
+        "failed_criteria": [],
+        "error_type": null
+      }
+    ],
+    "responses": {
+      "TC-001": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding.",
+      "TC-002": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding.",
+      "TC-003": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding.",
+      "TC-004": "You are a precise assistant.\nGoal: solve the user's task faithfully.\nRules: preserve facts, follow the requested format, avoid hallucinations, and self-check before responding."
+    },
+    "usage": {
+      "prompt_tokens": 40,
+      "completion_tokens": 40
+    }
+  }
+]

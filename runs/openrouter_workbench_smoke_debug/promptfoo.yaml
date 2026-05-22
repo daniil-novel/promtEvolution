@@ -1,0 +1,28 @@
+description: Prompt Evolution Workbench regression config
+providers:
+- openrouter:deepseek/deepseek-v4-flash
+prompts:
+- final_prompt.md
+tests:
+- vars:
+    input: 'Проверочный вход 1. Нужно выполнить задачу: Преобразуй сырой промпт пользователя
+      в структурированный production-ready системный промпт.
+
+
+      Сохрани исходную задачу, смысл, ограничения и о'
+  assert:
+  - type: contains
+    value: Сохраняет намерение пользователя
+  - type: contains
+    value: Соблюдает требуемый формат ответа
+- vars:
+    input: 'Проверочный вход 2. Нужно выполнить задачу: Преобразуй сырой промпт пользователя
+      в структурированный production-ready системный промпт.
+
+
+      Сохрани исходную задачу, смысл, ограничения и о'
+  assert:
+  - type: contains
+    value: Сохраняет намерение пользователя
+  - type: contains
+    value: Соблюдает требуемый формат ответа

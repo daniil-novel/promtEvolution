@@ -1,0 +1,26 @@
+[
+  {
+    "id": "generation_2_child_2",
+    "iteration": 2,
+    "weight": 0.5618812193501174,
+    "reward": 0.534385
+  },
+  {
+    "id": "iteration_1_candidate_2",
+    "iteration": 1,
+    "weight": 0.4381187806498827,
+    "reward": 0.416679
+  },
+  {
+    "id": "generation_3_child_1",
+    "iteration": 3,
+    "weight": 0.0,
+    "reward": 0.0
+  },
+  {
+    "id": "generation_3_child_2",
+    "iteration": 3,
+    "weight": 0.0,
+    "reward": 0.0
+  }
+]

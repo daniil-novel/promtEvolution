@@ -1,0 +1,25 @@
+description: Prompt Evolution Workbench regression config
+providers:
+- mock:mock
+prompts:
+- final_prompt.md
+tests:
+- vars:
+    input: 'Агент сообщил: задача выполнена, тесты пройдены, отчёт сохранён, открытых
+      вопросов нет.'
+  assert:
+  - type: contains
+    value: Ответ является валидным JSON-объектом
+  - type: contains
+    value: decision равен continue_to_final
+- vars:
+    input: 'Проверочный вход 2. Нужно выполнить задачу: Создай production-ready системный
+      промпт для ревьюера качества ответа агента.
+
+
+      Ревьюер должен определить, можно ли переходить к финальному о'
+  assert:
+  - type: contains
+    value: Сохраняет намерение пользователя
+  - type: contains
+    value: Соблюдает требуемый формат ответа

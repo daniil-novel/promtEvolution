@@ -1,0 +1,6 @@
+weights:
+  task_success: 0.35
+  format_compliance: 0.2
+  factuality: 0.25
+  tool_usage_quality: 0.1
+  cost_efficiency: 0.1

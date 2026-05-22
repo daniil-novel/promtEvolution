@@ -1,0 +1,38 @@
+[
+  {
+    "id": "iteration_1_baseline",
+    "iteration": 1,
+    "weight": 0.5,
+    "reward": 0.30000000000000004
+  },
+  {
+    "id": "iteration_1_candidate_2",
+    "iteration": 1,
+    "weight": 0.5,
+    "reward": 0.30000000000000004
+  },
+  {
+    "id": "generation_4_child_1",
+    "iteration": 4,
+    "weight": 0.0,
+    "reward": 0.0
+  },
+  {
+    "id": "generation_4_child_2",
+    "iteration": 4,
+    "weight": 0.0,
+    "reward": 0.0
+  },
+  {
+    "id": "generation_4_child_3",
+    "iteration": 4,
+    "weight": 0.0,
+    "reward": 0.0
+  },
+  {
+    "id": "generation_4_child_4",
+    "iteration": 4,
+    "weight": 0.0,
+    "reward": 0.0
+  }
+]
