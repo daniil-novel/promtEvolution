@@ -14,6 +14,7 @@ It is built for local terminal usage, including the VS Code terminal. It is not 
 - Calculate pass@1, pass@k, and additional quality metrics.
 - Save Markdown and JSON reports.
 - Keep provider credentials in environment variables only.
+- Run an advanced `workbench` mode with task clarification, INSPO-like instruction population evolution, replay buffer, tool policy, and Promptfoo export.
 
 ## Установка
 
@@ -132,6 +133,7 @@ docker compose run --rm prompt-evolve run --config prompt-evolve.yaml --task my_
 
 ```bash
 prompt-evolve run --task examples/task.md
+prompt-evolve workbench --task examples/task.md --prompt examples/prompt.md --provider mock
 prompt-evolve generate-tests --task examples/task.md --target-tests 40 --out runs/tests.json
 prompt-evolve evaluate --task examples/task.md --prompt examples/prompt.md --tests examples/tests.json
 prompt-evolve init-config --out prompt-evolve.yaml
@@ -147,6 +149,30 @@ Useful options:
 - `--reasoning`: reasoning effort hint passed to providers when supported.
 - `--self-check`: enable self-check regulators.
 - `--config`: load YAML configuration, with CLI options taking priority.
+- `workbench --population-size`: size of the evolving prompt instruction population.
+- `workbench --generations`: number of INSPO-like evolution generations.
+- `workbench --mcp-config`: optional MCP server config used to build `tool_policy.yaml`.
+
+## Advanced Workbench
+
+`prompt-evolve workbench` is the strongest mode. It keeps the simple CLI surface, but adds a production prompt package around the final prompt:
+
+```powershell
+.\scripts\run-local.ps1 workbench --config examples\prompt_project.py --population-size 6 --generations 3 --out runs\advanced_prompt
+```
+
+It creates:
+
+- `final_prompt.md` — best evolved instruction.
+- `task_spec.yaml` — clarified executable task specification.
+- `tool_policy.yaml` — MCP/tool usage policy extension point.
+- `reward_config.yaml` — reward weights for task success, format, factuality, tool quality, and cost.
+- `replay_buffer.json` — low-reward trajectories used for reflection.
+- `population.json` — final prompt population with weights and rewards.
+- `failure_analysis.md` — concise review of weak trajectories.
+- `promptfoo.yaml` — regression-test export for Promptfoo.
+
+Use `workbench` when you need a stronger workflow than the default SCOPE loop: task clarification, real tests, trajectory storage, and INSPO-like instruction-policy evolution.
 
 ## Python config
 
@@ -252,6 +278,12 @@ prompt_evolve/
   metrics.py
   scope.py
   report.py
+  clarify.py
+  inspo.py
+  mcp_tools.py
+  rewards.py
+  trajectories.py
+  workbench.py
 tests/
   unit/
   integration/

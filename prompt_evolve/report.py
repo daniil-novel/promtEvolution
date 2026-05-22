@@ -97,6 +97,19 @@ def write_markdown_report(out_dir: str | Path, payload: dict[str, Any]) -> Path:
         for label, values in item.items():
             for guideline in values:
                 guideline_lines.append(f"- {label}: {guideline}")
+    workbench = payload.get("workbench") or {}
+    workbench_lines = []
+    if workbench:
+        workbench_lines = [
+            "## 11. Workbench Artifacts",
+            "",
+            f"Strategy: `{workbench.get('strategy')}`",
+            f"Population size: `{workbench.get('population_size')}`",
+            f"Generations: `{workbench.get('generations')}`",
+            "",
+            "\n".join(f"- `{item}`" for item in workbench.get("artifacts", [])),
+            "",
+        ]
     content = "\n".join(
         [
             "# Prompt Evolution Report",
@@ -147,7 +160,8 @@ def write_markdown_report(out_dir: str | Path, payload: dict[str, Any]) -> Path:
             "",
             f"Best candidate: `{payload['best_result']['candidate']['id']}`",
             "",
-            "## 11. Recommendations",
+            *workbench_lines,
+            "## 12. Recommendations" if workbench else "## 11. Recommendations",
             "",
             "Review failed cases and run another iteration if quality is below target.",
         ]

@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "prompt-evolution-cli"
-version = "0.1.0"
-description = "CLI utility for SCOPE prompt evolution."
+version = "0.2.0"
+description = "CLI utility and workbench for prompt evolution."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

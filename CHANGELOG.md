@@ -1,6 +1,60 @@
 # ChangeLog
 
-## 2026-05-21 — Commit: pending
+## 2026-05-22 — Commit: pending
+
+### Что изменено
+
+- Версия проекта поднята до `0.2.0`.
+- Добавлена команда `prompt-evolve workbench` для advanced prompt workbench.
+- Добавлены слои `clarify`, `mcp_tools`, `rewards`, `trajectories`, `inspo`, `workbench`.
+- Реализован INSPO-like цикл: популяция инструкций, reward scoring, elite selection, mutation через reflection и replay buffer.
+- Добавлены артефакты `task_spec.yaml`, `tool_policy.yaml`, `reward_config.yaml`, `replay_buffer.json`, `population.json`, `failure_analysis.md`, `promptfoo.yaml`.
+- Добавлен пример `examples/advanced_prompt_project.py`.
+- README и русские инструкции дополнены режимом Workbench.
+
+### Для чего это нужно
+
+- Это переводит проект из простого SCOPE-улучшателя промптов в более мощный PromptOps/workbench-инструмент для реальных проектов.
+- Пользователь получает не только финальный промпт, но и спецификацию задачи, policy инструментов, регрессионный export и историю слабых траекторий.
+
+### Почему это сделано именно так
+
+- Workbench добавлен отдельной командой, чтобы не ломать стабильные команды `run`, `generate-tests` и `evaluate`.
+- MCP реализован как безопасная extension point/policy layer, без автоматического запуска внешних серверов и без риска side effects.
+- INSPO-like подход эволюционирует инструкции и policy-текст без попытки обучать веса модели внутри CLI.
+
+### Затронутые файлы
+
+- `pyproject.toml`
+- `prompt_evolve/cli.py`
+- `prompt_evolve/models.py`
+- `prompt_evolve/clarify.py`
+- `prompt_evolve/mcp_tools.py`
+- `prompt_evolve/rewards.py`
+- `prompt_evolve/trajectories.py`
+- `prompt_evolve/inspo.py`
+- `prompt_evolve/workbench.py`
+- `prompt_evolve/report.py`
+- `tests/unit/test_workbench_components.py`
+- `tests/integration/test_cli.py`
+- `examples/advanced_prompt_project.py`
+- `docs/advanced_workbench_ru.md`
+- `docs/quick_usage_ru.md`
+- `README.md`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+- CLI smoke через `workbench` с mock provider покрыт integration-тестом.
+
+### Риски
+
+- Workbench пока не запускает реальные MCP-серверы сам; он создаёт policy/export слой для безопасной интеграции.
+- INSPO-like режим оптимизирует инструкции по eval reward, но не выполняет RL-обучение весов модели.
+
+## 2026-05-21 — Commit: be73146
 
 ### Что изменено
 

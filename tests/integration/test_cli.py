@@ -159,6 +159,71 @@ def test_evaluate_command(tmp_path):
     assert "Evaluation completed" in result.output
 
 
+def test_workbench_command(tmp_path):
+    task, prompt, tests = write_inputs(tmp_path)
+    result = runner.invoke(
+        app,
+        [
+            "workbench",
+            "--task",
+            str(task),
+            "--prompt",
+            str(prompt),
+            "--tests",
+            str(tests),
+            "--provider",
+            "mock",
+            "--target-tests",
+            "1",
+            "--population-size",
+            "2",
+            "--generations",
+            "1",
+            "--pass-k",
+            "1",
+            "--out",
+            str(tmp_path / "workbench"),
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert "Prompt workbench completed" in result.output
+    assert (tmp_path / "workbench" / "task_spec.yaml").exists()
+    assert (tmp_path / "workbench" / "tool_policy.yaml").exists()
+    assert (tmp_path / "workbench" / "replay_buffer.json").exists()
+    assert (tmp_path / "workbench" / "promptfoo.yaml").exists()
+
+
+def test_workbench_from_python_config_without_prompt_or_tests(tmp_path):
+    config = tmp_path / "workbench_project.py"
+    config.write_text(
+        "PROMPT_EVOLVE = {\n"
+        "  'task': {'text': 'Отвечай только JSON'},\n"
+        f"  'settings': {{'provider': 'mock', 'target_tests': 1, 'candidates': 2, 'pass_k': 1, 'output': {{'dir': r'{tmp_path / 'wb-config'}'}}}}\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    result = runner.invoke(
+        app,
+        [
+            "workbench",
+            "--config",
+            str(config),
+            "--population-size",
+            "2",
+            "--generations",
+            "1",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert (tmp_path / "wb-config" / "final_prompt.md").exists()
+
+
+def test_workbench_validation_error():
+    result = runner.invoke(app, ["workbench", "--provider", "mock", "--population-size", "1"])
+    assert result.exit_code == 1
+    assert "population-size must be at least 2" in result.output
+
+
 def test_evaluate_from_python_config(tmp_path):
     config = tmp_path / "project.py"
     config.write_text(
