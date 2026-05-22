@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -137,12 +138,19 @@ def run_workbench(
     replay_buffer_size: int = 100,
     clarify_questions: int = 8,
     mcp_config_path: str | None = None,
+    fast_eval: bool = True,
     status: callable | None = None,
 ) -> dict[str, Any]:
     logs: list[str] = []
+    out_dir = ensure_run_dirs(config.output.dir)
+    live_log_path = out_dir / "logs" / "run.log"
+    live_log_path.write_text("", encoding="utf-8")
 
     def emit(message: str) -> None:
         logs.append(message)
+        timestamped = f"{datetime.now().isoformat(timespec='seconds')} {message}"
+        with live_log_path.open("a", encoding="utf-8") as log_file:
+            log_file.write(timestamped + "\n")
         if status:
             status(message)
 
@@ -192,6 +200,13 @@ def run_workbench(
     emit("[6/10] Running INSPO-like population evolution...")
     pop_size = population_size or max(config.candidates, 4)
     gens = generations or config.iterations
+    approx_eval_calls = pop_size * gens * len(testcases) * (1 if fast_eval else 2)
+    approx_extra_calls = pop_size + gens + max(pop_size - elite_size, 0) * gens * 3 + 2
+    emit(
+        "[6/10] Estimated LLM calls: "
+        f"~{approx_eval_calls + approx_extra_calls} "
+        f"(fast_eval={fast_eval}, tests={len(testcases)}, population={pop_size}, generations={gens})"
+    )
     evolution = run_inspo_evolution(
         task=task,
         baseline_prompt=baseline_prompt,
@@ -204,6 +219,8 @@ def run_workbench(
         model=config.model,
         reasoning=config.reasoning,
         self_check=config.self_check,
+        llm_evaluate=not fast_eval,
+        status=emit,
     )
 
     emit("[7/10] Selecting final instruction and calculating reward metrics...")
@@ -218,7 +235,6 @@ def run_workbench(
     )
 
     emit("[8/10] Saving prompt population and replay buffer...")
-    out_dir = ensure_run_dirs(config.output.dir)
     (out_dir / "prompt_population").mkdir(parents=True, exist_ok=True)
     write_candidates(out_dir / "prompt_population" / "all_results", evolution.all_results)
     evolution.replay_buffer.save(out_dir / "replay_buffer.json")
@@ -254,6 +270,7 @@ def run_workbench(
         "population_size": pop_size,
         "generations": gens,
         "elite_size": elite_size,
+        "fast_eval": fast_eval,
         "task_spec": task_spec.to_dict(),
         "tool_policy": tool_policy.to_dict(),
         "replay_buffer_size": replay_buffer_size,

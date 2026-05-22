@@ -17,6 +17,16 @@ notepad .env
 `xhigh`. Если модель не поддерживает structured output, CLI повторит JSON-запрос
 без `response_format`.
 
+Workbench пишет живой лог прямо во время выполнения:
+
+```text
+runs/<run_name>/logs/run.log
+```
+
+По умолчанию `workbench` использует `--fast-eval`: ответы кандидатов идут через LLM,
+а оценка тестов выполняется локальной эвристикой. Это сильно дешевле и быстрее.
+Для LLM-оценщика добавь `--llm-eval`.
+
 ## 2. Описать промпт в Python-конфиге
 
 Открой `examples/prompt_project.py`.
@@ -80,6 +90,18 @@ runs/reviewer_prompt/tests.json
 
 ```powershell
 .\scripts\run-local.ps1 workbench --config examples\prompt_project.py --provider mock --population-size 2 --generations 1 --target-tests 2 --pass-k 1 --out runs\workbench_smoke
+```
+
+Для реального OpenRouter сначала запускай маленький smoke:
+
+```powershell
+.\scripts\run-local.ps1 workbench --config examples\prompt_project.py --provider openrouter --model deepseek/deepseek-v4-flash --reasoning none --population-size 2 --generations 1 --target-tests 2 --pass-k 1 --out runs\openrouter_workbench_smoke
+```
+
+Потом увеличивай параметры постепенно. Пример умеренного запуска:
+
+```powershell
+.\scripts\run-local.ps1 workbench --config examples\prompt_project.py --provider openrouter --model deepseek/deepseek-v4-flash --reasoning none --population-size 3 --generations 1 --target-tests 4 --pass-k 2 --out runs\advanced_reviewer_prompt_v3
 ```
 
 Главные результаты:

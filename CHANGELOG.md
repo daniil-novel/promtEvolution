@@ -4,6 +4,47 @@
 
 ### Что изменено
 
+- Workbench теперь пишет живой `logs/run.log` во время выполнения, а не только в конце.
+- Добавлен подробный progress-log по поколениям, кандидатам, тестам, reward и мутациям.
+- Добавлена оценка примерного количества LLM-вызовов перед INSPO-циклом.
+- Для `workbench` добавлен режим `--fast-eval/--llm-eval`; по умолчанию используется быстрый heuristic evaluator, чтобы сократить реальные LLM-вызовы.
+- Документация дополнена рекомендациями по маленькому OpenRouter smoke и постепенному увеличению параметров.
+
+### Для чего это нужно
+
+- Длинные OpenRouter-запуски больше не выглядят как зависание: видно, на каком кандидате и тесте находится процесс.
+- Реальные запуски стали дешевле и быстрее по умолчанию.
+
+### Почему это сделано именно так
+
+- Самый дорогой участок — LLM-оценка каждого ответа; `--fast-eval` оставляет LLM для генерации ответов, но снижает число evaluator-запросов.
+- `--llm-eval` оставлен для более строгой проверки, когда пользователь готов платить временем и токенами.
+
+### Затронутые файлы
+
+- `prompt_evolve/cli.py`
+- `prompt_evolve/evaluator.py`
+- `prompt_evolve/inspo.py`
+- `prompt_evolve/workbench.py`
+- `tests/unit/test_prompts_evaluator_scope_metrics.py`
+- `tests/integration/test_cli.py`
+- `docs/quick_usage_ru.md`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+- `.\scripts\run-local.ps1 workbench --config examples\prompt_project.py --provider openrouter --model deepseek/deepseek-v4-flash --reasoning none --population-size 2 --generations 1 --target-tests 2 --pass-k 1 --out runs\openrouter_workbench_smoke_debug`
+
+### Риски
+
+- `--fast-eval` быстрее, но менее строгий, чем LLM-оценщик; для финальной проверки можно запускать `--llm-eval` на меньшем наборе тестов.
+
+## 2026-05-22 — Commit: pending
+
+### Что изменено
+
 - Исправлена агрегация `usage` от OpenRouter, когда provider возвращает вложенные поля вроде `completion_tokens_details`.
 - Вложенные числовые usage-значения теперь разворачиваются в ключи вида `completion_tokens_details.reasoning_tokens`.
 - `run_candidate`, `aggregate_usage`, `estimated_cost` и reward cost scoring теперь устойчивы к нечисловым usage-полям.

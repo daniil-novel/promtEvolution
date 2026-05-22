@@ -206,6 +206,7 @@ def test_workbench_command(tmp_path):
     assert (tmp_path / "workbench" / "tool_policy.yaml").exists()
     assert (tmp_path / "workbench" / "replay_buffer.json").exists()
     assert (tmp_path / "workbench" / "promptfoo.yaml").exists()
+    assert "Estimated LLM calls" in (tmp_path / "workbench" / "logs" / "run.log").read_text(encoding="utf-8")
 
 
 def test_workbench_from_python_config_without_prompt_or_tests(tmp_path):
@@ -231,6 +232,38 @@ def test_workbench_from_python_config_without_prompt_or_tests(tmp_path):
     )
     assert result.exit_code == 0, result.output
     assert (tmp_path / "wb-config" / "final_prompt.md").exists()
+
+
+def test_workbench_llm_eval_flag(tmp_path):
+    task, prompt, tests = write_inputs(tmp_path)
+    result = runner.invoke(
+        app,
+        [
+            "workbench",
+            "--task",
+            str(task),
+            "--prompt",
+            str(prompt),
+            "--tests",
+            str(tests),
+            "--provider",
+            "mock",
+            "--target-tests",
+            "1",
+            "--population-size",
+            "2",
+            "--generations",
+            "1",
+            "--pass-k",
+            "1",
+            "--llm-eval",
+            "--out",
+            str(tmp_path / "workbench-llm"),
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    payload = json.loads((tmp_path / "workbench-llm" / "report.json").read_text(encoding="utf-8"))
+    assert payload["workbench"]["fast_eval"] is False
 
 
 def test_workbench_from_python_config_uses_default_task_when_prompt_only(tmp_path):

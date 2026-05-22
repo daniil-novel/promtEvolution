@@ -1,4 +1,9 @@
-from prompt_evolve.evaluator import evaluate_response, run_candidate, self_check_evaluation
+from prompt_evolve.evaluator import (
+    evaluate_response,
+    heuristic_evaluate_response,
+    run_candidate,
+    self_check_evaluation,
+)
 from prompt_evolve.metrics import (
     aggregate_usage,
     average_score,
@@ -78,6 +83,24 @@ def test_evaluate_response_and_run_candidate():
     assert evaluation.passed is True
     run = run_candidate(PromptCandidate("p1", "Prompt"), [case()], provider)
     assert run.evaluations[0].test_case_id == "TC-001"
+
+
+def test_run_candidate_supports_heuristic_eval_and_status():
+    messages = []
+    run = run_candidate(
+        PromptCandidate("p1", "Prompt"),
+        [case()],
+        MockProvider(),
+        llm_evaluate=False,
+        status=messages.append,
+    )
+    assert run.evaluations[0].reason == "Heuristic evaluator result."
+    assert any("running test" in item for item in messages)
+
+
+def test_heuristic_evaluate_response():
+    evaluation = heuristic_evaluate_response(case(), "Uses Markdown and preserves facts")
+    assert evaluation.test_case_id == "TC-001"
 
 
 def test_run_candidate_stops_on_fatal_provider_error():

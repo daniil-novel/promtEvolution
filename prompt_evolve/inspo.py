@@ -146,6 +146,8 @@ def run_inspo_evolution(
     model: str | None = None,
     reasoning: str | None = None,
     self_check: bool = True,
+    llm_evaluate: bool = True,
+    status: callable | None = None,
 ) -> InspoEvolutionResult:
     initial = generate_prompt_candidates(
         task,
@@ -163,8 +165,15 @@ def run_inspo_evolution(
     best_result: PromptRunResult | None = None
 
     for generation in range(1, generations + 1):
+        if status:
+            status(f"[6/10] Generation {generation}/{generations}: evaluating population...")
         evaluated: list[tuple[InstructionGenome, PromptRunResult]] = []
-        for genome in population:
+        for genome_index, genome in enumerate(population, start=1):
+            if status:
+                status(
+                    f"  - Generation {generation}/{generations}, "
+                    f"candidate {genome_index}/{len(population)}: {genome.candidate.id}"
+                )
             result = run_candidate(
                 genome.candidate,
                 testcases,
@@ -172,8 +181,12 @@ def run_inspo_evolution(
                 model=model,
                 reasoning=reasoning,
                 self_check=self_check,
+                llm_evaluate=llm_evaluate,
+                status=status,
             )
             reward = reward_score(result, weights=RewardWeights())
+            if status:
+                status(f"  - {genome.candidate.id}: reward={reward:.3f}")
             replay.add(TrajectoryRecord.from_result(generation=generation, result=result, reward=reward))
             updated = InstructionGenome(candidate=genome.candidate, reward=reward, weight=reward)
             evaluated.append((updated, result))
@@ -181,12 +194,19 @@ def run_inspo_evolution(
         evaluated.sort(key=lambda item: item[0].reward, reverse=True)
         generation_best = evaluated[0][1]
         best_result = select_best_prompt([generation_best] + ([best_result] if best_result else []))
+        if status:
+            status(f"[6/10] Generation {generation}/{generations}: generating guidelines...")
         all_guidelines.append(generate_guidelines(generation_best, provider, model=model, reasoning=reasoning))
 
         elites = [item[0] for item in evaluated[: max(1, elite_size)]]
         next_population = list(elites)
         child_index = 1
         while len(next_population) < population_size:
+            if status:
+                status(
+                    f"[6/10] Generation {generation}/{generations}: "
+                    f"mutating child {child_index}/{population_size - len(elites)}"
+                )
             parent_result = evaluated[(child_index - 1) % len(evaluated)][1]
             child = mutate_instruction(
                 parent_result,

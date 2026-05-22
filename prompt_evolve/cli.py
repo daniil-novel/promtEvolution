@@ -235,6 +235,7 @@ def workbench(
     replay_buffer_size: int = typer.Option(100, "--replay-buffer-size"),
     clarify_questions: int = typer.Option(8, "--clarify-questions"),
     mcp_config: Optional[str] = typer.Option(None, "--mcp-config"),
+    fast_eval: bool = typer.Option(True, "--fast-eval/--llm-eval"),
 ) -> None:
     """Run the advanced INSPO-style prompt workbench."""
     try:
@@ -276,6 +277,7 @@ def workbench(
             replay_buffer_size=replay_buffer_size,
             clarify_questions=clarify_questions,
             mcp_config_path=mcp_config,
+            fast_eval=fast_eval,
             status=typer.echo,
         )
     except Exception as exc:

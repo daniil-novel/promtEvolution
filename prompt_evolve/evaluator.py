@@ -58,6 +58,24 @@ def evaluate_response(
     )
 
 
+def heuristic_evaluate_response(test_case: TestCase, response: str) -> EvaluationResult:
+    failed = [
+        criterion
+        for criterion in test_case.evaluation_criteria
+        if criterion.lower().split()[0] not in response.lower()
+    ]
+    passed = not failed
+    score = 1.0 if passed else max(0.0, 1.0 - len(failed) / max(len(test_case.evaluation_criteria), 1))
+    return EvaluationResult(
+        test_case_id=test_case.id,
+        passed=passed,
+        score=score,
+        reason="Heuristic evaluator result.",
+        failed_criteria=failed,
+        error_type=None if passed else "criteria_mismatch",
+    )
+
+
 def run_candidate(
     candidate: PromptCandidate,
     testcases: list[TestCase],
@@ -66,11 +84,16 @@ def run_candidate(
     model: str | None = None,
     reasoning: str | None = None,
     self_check: bool = True,
+    llm_evaluate: bool = True,
+    status: callable | None = None,
 ) -> PromptRunResult:
     evaluations: list[EvaluationResult] = []
     responses: dict[str, str] = {}
     usage = {}
-    for case in testcases:
+    total = len(testcases)
+    for index, case in enumerate(testcases, start=1):
+        if status:
+            status(f"    - {candidate.id}: running test {index}/{total} ({case.id})")
         messages = [
             {"role": "system", "content": candidate.content},
             {"role": "user", "content": case.input},
@@ -84,7 +107,14 @@ def run_candidate(
         except Exception as exc:
             response_text = f"Provider error: {exc}"
         responses[case.id] = response_text
-        result = evaluate_response(case, response_text, provider, model=model, reasoning=reasoning)
+        if status:
+            mode = "LLM" if llm_evaluate else "heuristic"
+            status(f"    - {candidate.id}: evaluating test {index}/{total} with {mode}")
+        result = (
+            evaluate_response(case, response_text, provider, model=model, reasoning=reasoning)
+            if llm_evaluate
+            else heuristic_evaluate_response(case, response_text)
+        )
         if self_check:
             result = self_check_evaluation(result)
         evaluations.append(result)
