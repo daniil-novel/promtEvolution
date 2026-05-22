@@ -183,10 +183,10 @@ You can describe the whole run in a Python file instead of passing long CLI comm
 ```
 
 Inside the Python config, use `PROMPT_EVOLVE = {...}` with `task`, `prompt`, optional `tests`, and `settings`.
+For the common "upgrade this prompt" workflow, `task` is optional: if `prompt` is supplied and `task` is missing, the CLI uses a built-in universal prompt-upgrade task.
 
 ```python
 PROMPT_EVOLVE = {
-    "task": {"text": "Describe what the final prompt must do."},
     "prompt": {"text": "Paste your current prompt here."},
     "settings": {
         "provider": "openrouter",

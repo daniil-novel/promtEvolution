@@ -15,6 +15,7 @@ from .mcp_tools import infer_tool_policy, load_mcp_config
 from .metrics import build_metrics, pass_at_1
 from .models import NoopSystemMetricsCollector, RewardWeights
 from .providers import provider_from_config
+from .prompts import DEFAULT_PROMPT_UPGRADE_TASK
 from .report import (
     ensure_run_dirs,
     report_payload,
@@ -35,6 +36,22 @@ def _resolve_text(cli_path: str | None, config_path: str | None, text: str | Non
     if text and text.strip():
         return text.strip()
     raise ConfigError(f"{label} file is missing or empty")
+
+
+def _resolve_task_or_default(
+    cli_path: str | None,
+    config_path: str | None,
+    text: str | None,
+    *,
+    prompt_path: str | None,
+    prompt_text: str | None,
+    config_prompt_path: str | None,
+) -> str:
+    if cli_path or config_path or (text and text.strip()):
+        return _resolve_text(cli_path, config_path, text, "Task")
+    if prompt_path or config_prompt_path or (prompt_text and prompt_text.strip()):
+        return DEFAULT_PROMPT_UPGRADE_TASK
+    raise ConfigError("Task file is missing or empty")
 
 
 def _resolve_tests(cli_path: str | None, config_path: str | None, data: list[dict[str, Any]] | None):
@@ -130,7 +147,14 @@ def run_workbench(
             status(message)
 
     emit("[1/10] Loading workbench inputs...")
-    task = _resolve_text(task_path, config_task_path, task_text, "Task")
+    task = _resolve_task_or_default(
+        task_path,
+        config_task_path,
+        task_text,
+        prompt_path=prompt_path,
+        prompt_text=prompt_text,
+        config_prompt_path=config_prompt_path,
+    )
     baseline_prompt = None
     if prompt_path or prompt_text or config_prompt_path:
         baseline_prompt = _resolve_text(prompt_path, config_prompt_path, prompt_text, "Prompt")

@@ -4,6 +4,46 @@
 
 ### Что изменено
 
+- Добавлена встроенная универсальная задача апгрейда промпта `DEFAULT_PROMPT_UPGRADE_TASK`.
+- Команды `run`, `evaluate` и `workbench` теперь могут работать с Python/YAML config, где указан только `prompt`, без отдельного `task`.
+- Добавлен обезличенный пример `examples/prompt_only_project.py`: для обычного сценария нужно менять только `RAW_PROMPT` и настройки.
+- README и русские инструкции обновлены под prompt-only workflow.
+
+### Для чего это нужно
+
+- Пользователю не нужно каждый раз писать отдельную задачу для апгрейда промпта.
+- Основной сценарий становится проще: вставил сырой промпт в `RAW_PROMPT`, запустил CLI, получил улучшенный `final_prompt.md`.
+
+### Почему это сделано именно так
+
+- Дефолтная задача применяется только когда `task` отсутствует, но `prompt` задан. Явно переданный `task` сохраняет приоритет.
+- `generate-tests` без `task` оставлен строгим, потому что для генерации тестов с нуля нужен предмет задачи.
+
+### Затронутые файлы
+
+- `prompt_evolve/prompts.py`
+- `prompt_evolve/pipeline.py`
+- `prompt_evolve/workbench.py`
+- `examples/prompt_only_project.py`
+- `tests/integration/test_cli.py`
+- `README.md`
+- `docs/quick_usage_ru.md`
+- `docs/python_config_guide.md`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+
+### Риски
+
+- Универсальная задача подходит для апгрейда промптов, но для узкой предметной оптимизации лучше явно задавать `task`.
+
+## 2026-05-22 — Commit: 0d2e3a0
+
+### Что изменено
+
 - Версия проекта поднята до `0.2.0`.
 - Добавлена команда `prompt-evolve workbench` для advanced prompt workbench.
 - Добавлены слои `clarify`, `mcp_tools`, `rewards`, `trajectories`, `inspo`, `workbench`.

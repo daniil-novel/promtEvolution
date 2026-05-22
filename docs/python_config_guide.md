@@ -8,16 +8,9 @@ Create `my_prompt_project.py`:
 
 ```python
 PROMPT_EVOLVE = {
-    "task": {
-        "text": """
-# Task
-
-Describe what the final prompt must do.
-"""
-    },
     "prompt": {
         "text": """
-Paste your current prompt here. Remove this block if you want to generate from scratch.
+Paste your current prompt here.
 """
     },
     "settings": {
@@ -31,6 +24,8 @@ Paste your current prompt here. Remove this block if you want to generate from s
     },
 }
 ```
+
+Для обычного сценария апгрейда промпта поле `task` можно не указывать. Если `prompt` есть, а `task` отсутствует, CLI автоматически использует встроенную универсальную задачу: преобразовать сырой промпт в production-ready системный промпт.
 
 Run:
 

@@ -9,7 +9,7 @@ from .config import AppConfig, ConfigError, read_text_file
 from .evaluator import run_candidate
 from .metrics import build_metrics, pass_at_1
 from .models import NoopSystemMetricsCollector, PromptRunResult
-from .prompts import generate_prompt_candidates, select_best_prompt
+from .prompts import DEFAULT_PROMPT_UPGRADE_TASK, generate_prompt_candidates, select_best_prompt
 from .providers import provider_from_config
 from .report import (
     ensure_run_dirs,
@@ -46,6 +46,27 @@ def _resolve_text(
     raise ConfigError(f"{label} file is missing or empty")
 
 
+def _resolve_task_or_default(
+    *,
+    cli_path: str | None,
+    config_path: str | None,
+    config_text: str | None,
+    prompt_path: str | None = None,
+    prompt_text: str | None = None,
+    config_prompt_path: str | None = None,
+) -> str:
+    if cli_path or config_path or (config_text and config_text.strip()):
+        return _resolve_text(
+            cli_path=cli_path,
+            config_path=config_path,
+            config_text=config_text,
+            label="Task",
+        )
+    if prompt_path or config_prompt_path or (prompt_text and prompt_text.strip()):
+        return DEFAULT_PROMPT_UPGRADE_TASK
+    raise ConfigError("Task file is missing or empty")
+
+
 def _resolve_testcases(
     *,
     cli_path: str | None,
@@ -68,11 +89,13 @@ def generate_tests_command(
     task_text: str | None = None,
     config_task_path: str | None = None,
 ) -> list[dict[str, Any]]:
-    task = _resolve_text(
+    task = _resolve_task_or_default(
         cli_path=task_path,
         config_path=config_task_path,
         config_text=task_text,
-        label="Task",
+        prompt_path=None,
+        prompt_text=None,
+        config_prompt_path=None,
     )
     provider = provider_from_config(config)
     provider.check_configured()
@@ -101,11 +124,13 @@ def evaluate_command(
     tests_data: list[dict[str, Any]] | None = None,
     config_tests_path: str | None = None,
 ) -> dict[str, Any]:
-    task = _resolve_text(
+    task = _resolve_task_or_default(
         cli_path=task_path,
         config_path=config_task_path,
         config_text=task_text,
-        label="Task",
+        prompt_path=prompt_path,
+        prompt_text=prompt_text,
+        config_prompt_path=config_prompt_path,
     )
     prompt = _resolve_text(
         cli_path=prompt_path,
@@ -182,11 +207,13 @@ def run_evolution(
             status(message)
 
     emit("[1/9] Loading input files...")
-    task = _resolve_text(
+    task = _resolve_task_or_default(
         cli_path=task_path,
         config_path=config_task_path,
         config_text=task_text,
-        label="Task",
+        prompt_path=prompt_path,
+        prompt_text=prompt_text,
+        config_prompt_path=config_prompt_path,
     )
     baseline_prompt = None
     if prompt_path or config_prompt_path or prompt_text:
