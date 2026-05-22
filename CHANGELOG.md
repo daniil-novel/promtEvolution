@@ -4,6 +4,44 @@
 
 ### Что изменено
 
+- Исправлена агрегация `usage` от OpenRouter, когда provider возвращает вложенные поля вроде `completion_tokens_details`.
+- Вложенные числовые usage-значения теперь разворачиваются в ключи вида `completion_tokens_details.reasoning_tokens`.
+- `run_candidate`, `aggregate_usage`, `estimated_cost` и reward cost scoring теперь устойчивы к нечисловым usage-полям.
+- Добавлены тесты на nested usage и live smoke проверен через OpenRouter `deepseek/deepseek-v4-flash`.
+
+### Для чего это нужно
+
+- OpenRouter может возвращать не только числа, но и вложенные детализации токенов; раньше это приводило к `unsupported operand type(s) for +: 'int' and 'dict'`.
+- Теперь реальные OpenRouter-запуски не ломаются на сборе метрик.
+
+### Почему это сделано именно так
+
+- Числовые nested-поля сохраняются в отчёте без потери данных, а нечисловые поля не участвуют в суммировании.
+- Основные поля `prompt_tokens`, `completion_tokens`, `total_tokens` остаются совместимыми с прежним форматом.
+
+### Затронутые файлы
+
+- `prompt_evolve/models.py`
+- `prompt_evolve/metrics.py`
+- `prompt_evolve/evaluator.py`
+- `prompt_evolve/rewards.py`
+- `tests/unit/test_prompts_evaluator_scope_metrics.py`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+- `.\scripts\run-local.ps1 run --config examples\prompt_project.py --provider openrouter --model deepseek/deepseek-v4-flash --reasoning none --target-tests 1 --iterations 1 --candidates 1 --pass-k 1 --out runs\openrouter_smoke_debug`
+
+### Риски
+
+- Нечисловые usage-поля не сохраняются в метриках; при необходимости их можно добавить в отдельный raw usage/debug report.
+
+## 2026-05-22 — Commit: pending
+
+### Что изменено
+
 - `.env` теперь перезаписывает существующие переменные окружения при загрузке CLI.
 - Ошибки OpenRouter `401/402/403` помечаются как фатальные и останавливают запуск вместо повторения на каждом тесткейсе.
 - Provider fallback больше не повторяет JSON-запрос без `response_format` при фатальных ошибках ключа, лимита или доступа.

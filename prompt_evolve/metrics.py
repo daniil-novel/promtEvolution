@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from .models import EvaluationResult, MetricsSnapshot, PromptRunResult, TestCase
 
 
@@ -58,21 +60,35 @@ def failed_tests_count(evaluations: list[EvaluationResult]) -> int:
     return sum(1 for item in evaluations if not item.passed)
 
 
-def aggregate_usage(results: list[PromptRunResult]) -> dict[str, int | float]:
-    usage: dict[str, int | float] = {}
-    for result in results:
-        for key, value in result.usage.items():
-            usage[key] = usage.get(key, 0) + value
+def _is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def merge_usage(usage: dict[str, Any], update: dict[str, Any], *, prefix: str = "") -> dict[str, Any]:
+    for key, value in update.items():
+        name = f"{prefix}.{key}" if prefix else str(key)
+        if _is_number(value):
+            current = usage.get(name, 0)
+            usage[name] = (current if _is_number(current) else 0) + value
+        elif isinstance(value, dict):
+            merge_usage(usage, value, prefix=name)
     return usage
 
 
-def estimated_cost(usage: dict[str, int | float], *, per_1k_tokens: float = 0.0) -> float | None:
+def aggregate_usage(results: list[PromptRunResult]) -> dict[str, Any]:
+    usage: dict[str, Any] = {}
+    for result in results:
+        merge_usage(usage, result.usage)
+    return usage
+
+
+def estimated_cost(usage: dict[str, Any], *, per_1k_tokens: float = 0.0) -> float | None:
     total = usage.get("total_tokens")
     if total is None:
         prompt = usage.get("prompt_tokens", 0)
         completion = usage.get("completion_tokens", 0)
         total = prompt + completion
-    if not total or per_1k_tokens <= 0:
+    if not _is_number(total) or not total or per_1k_tokens <= 0:
         return None
     return float(total) / 1000 * per_1k_tokens
 

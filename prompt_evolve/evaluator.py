@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from .llm import generate_json, generate_text
+from .metrics import merge_usage
 from .models import EvaluationResult, LLMProvider, PromptCandidate, PromptRunResult, TestCase
 from .providers import FatalProviderError
 
@@ -68,7 +69,7 @@ def run_candidate(
 ) -> PromptRunResult:
     evaluations: list[EvaluationResult] = []
     responses: dict[str, str] = {}
-    usage: dict[str, int | float] = {}
+    usage = {}
     for case in testcases:
         messages = [
             {"role": "system", "content": candidate.content},
@@ -77,8 +78,7 @@ def run_candidate(
         try:
             answer = provider.generate(messages, model=model, reasoning=reasoning)
             response_text = answer.content
-            for key, value in answer.usage.items():
-                usage[key] = usage.get(key, 0) + value
+            merge_usage(usage, answer.usage)
         except FatalProviderError:
             raise
         except Exception as exc:

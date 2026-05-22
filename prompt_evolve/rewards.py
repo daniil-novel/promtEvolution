@@ -10,7 +10,7 @@ def cost_efficiency_score(result: PromptRunResult, *, token_budget: int = 100_00
     total = result.usage.get("total_tokens")
     if total is None:
         total = result.usage.get("prompt_tokens", 0) + result.usage.get("completion_tokens", 0)
-    if not total:
+    if not isinstance(total, (int, float)) or isinstance(total, bool) or not total:
         return 1.0
     return max(0.0, 1.0 - float(total) / token_budget)
 

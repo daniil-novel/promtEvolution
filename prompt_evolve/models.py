@@ -9,7 +9,7 @@ from typing import Any, Protocol
 @dataclass(frozen=True)
 class LLMResponse:
     content: str
-    usage: dict[str, int | float] = field(default_factory=dict)
+    usage: dict[str, Any] = field(default_factory=dict)
     raw: dict[str, Any] = field(default_factory=dict)
 
 
@@ -87,7 +87,7 @@ class PromptRunResult:
     candidate: PromptCandidate
     evaluations: list[EvaluationResult]
     responses: dict[str, str]
-    usage: dict[str, int | float] = field(default_factory=dict)
+    usage: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -107,7 +107,7 @@ class MetricsSnapshot:
     average_score: float
     improvement_delta: float
     failed_tests_count: int
-    token_usage: dict[str, int | float] = field(default_factory=dict)
+    token_usage: dict[str, Any] = field(default_factory=dict)
     estimated_cost: float | None = None
 
     def to_dict(self) -> dict[str, Any]:

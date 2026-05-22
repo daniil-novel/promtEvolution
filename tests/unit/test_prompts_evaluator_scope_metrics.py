@@ -8,6 +8,7 @@ from prompt_evolve.metrics import (
     failed_tests_count,
     format_pass_rate,
     improvement_delta,
+    merge_usage,
     pass_at_1,
     pass_at_k,
 )
@@ -122,6 +123,34 @@ def test_usage_and_cost():
     usage = aggregate_usage([result("a", True), result("b", True)])
     assert usage["completion_tokens"] == 6
     assert estimated_cost({"total_tokens": 1000}, per_1k_tokens=0.5) == 0.5
+
+
+def test_usage_merge_flattens_nested_provider_details():
+    usage = merge_usage(
+        {},
+        {
+            "prompt_tokens": 2,
+            "completion_tokens": 3,
+            "completion_tokens_details": {"reasoning_tokens": 4},
+            "ignored": {"nested": "text"},
+        },
+    )
+    merge_usage(usage, {"prompt_tokens": 5, "completion_tokens_details": {"reasoning_tokens": 6}})
+    assert usage["prompt_tokens"] == 7
+    assert usage["completion_tokens"] == 3
+    assert usage["completion_tokens_details.reasoning_tokens"] == 10
+    assert "ignored.nested" not in usage
+
+
+def test_run_candidate_accepts_nested_usage_details():
+    class NestedUsageProvider(MockProvider):
+        def generate(self, messages, *, model=None, reasoning=None, response_format=None):
+            response = super().generate(messages, model=model, reasoning=reasoning, response_format=response_format)
+            response.usage["completion_tokens_details"] = {"reasoning_tokens": 2}
+            return response
+
+    run = run_candidate(PromptCandidate("p1", "Prompt"), [case()], NestedUsageProvider())
+    assert run.usage["completion_tokens_details.reasoning_tokens"] == 2
 
 
 def test_scope_guidelines_and_update_prompt():
