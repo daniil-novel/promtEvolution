@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .llm import generate_json
 from .models import LLMProvider, TaskSpec
+from .providers import FatalProviderError
 
 
 DEFAULT_CLARIFICATION_QUESTIONS = [
@@ -62,6 +63,8 @@ def build_task_spec(
     ]
     try:
         data = generate_json(provider, messages, model=model, reasoning=reasoning)
+    except FatalProviderError:
+        raise
     except Exception:
         data = {}
     success = data.get("success_criteria") if isinstance(data, dict) else None

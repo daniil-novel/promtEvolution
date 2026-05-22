@@ -24,6 +24,22 @@ def test_load_dotenv_sets_missing_values(tmp_path, monkeypatch):
     assert "OPENROUTER_API_KEY" in __import__("os").environ
 
 
+def test_load_dotenv_overrides_existing_values_by_default(tmp_path, monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "old")
+    env = tmp_path / ".env"
+    env.write_text("OPENROUTER_API_KEY=new\n", encoding="utf-8")
+    load_dotenv(env)
+    assert __import__("os").environ["OPENROUTER_API_KEY"] == "new"
+
+
+def test_load_dotenv_can_keep_existing_values(tmp_path, monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "old")
+    env = tmp_path / ".env"
+    env.write_text("OPENROUTER_API_KEY=new\n", encoding="utf-8")
+    load_dotenv(env, override=False)
+    assert __import__("os").environ["OPENROUTER_API_KEY"] == "old"
+
+
 def test_load_config_from_yaml(tmp_path):
     path = tmp_path / "config.yaml"
     path.write_text("provider: mock\ntarget_tests: 2\noutput:\n  dir: out\n", encoding="utf-8")

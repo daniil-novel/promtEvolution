@@ -8,6 +8,7 @@ from .evaluator import run_candidate
 from .llm import generate_text
 from .models import LLMProvider, PromptCandidate, PromptRunResult, RewardWeights, TestCase
 from .prompts import PROMPT_ENGINEERING_TECHNIQUES, build_seed_prompt, generate_prompt_candidates, select_best_prompt
+from .providers import FatalProviderError
 from .rewards import reward_score
 from .scope import generate_guidelines, update_prompt_with_guidelines
 from .trajectories import ReplayBuffer, TrajectoryRecord
@@ -76,6 +77,8 @@ def reflect_failures(
     ]
     try:
         text = generate_text(provider, messages, model=model, reasoning=reasoning)
+    except FatalProviderError:
+        raise
     except Exception:
         text = "\n".join(
             [
@@ -123,6 +126,8 @@ def mutate_instruction(
     ]
     try:
         content = generate_text(provider, messages, model=model, reasoning=reasoning)
+    except FatalProviderError:
+        raise
     except Exception:
         content = seed
     return PromptCandidate(id=f"generation_{generation}_child_{child_index}", content=content, iteration=generation)

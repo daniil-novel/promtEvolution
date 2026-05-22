@@ -9,6 +9,7 @@ from typing import Any
 from .config import ConfigError
 from .llm import generate_json
 from .models import LLMProvider, TestCase
+from .providers import FatalProviderError
 
 REQUIRED_FIELDS = {
     "id",
@@ -281,6 +282,8 @@ def generate_testcases(
     try:
         data = generate_json(provider, messages, model=model, reasoning=reasoning)
         generated = validate_testcases(data if isinstance(data, list) else [data])
+    except FatalProviderError:
+        raise
     except Exception:
         generated = []
     while len(generated) < count:

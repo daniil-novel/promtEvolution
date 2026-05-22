@@ -4,6 +4,50 @@
 
 ### Что изменено
 
+- `.env` теперь перезаписывает существующие переменные окружения при загрузке CLI.
+- Ошибки OpenRouter `401/402/403` помечаются как фатальные и останавливают запуск вместо повторения на каждом тесткейсе.
+- Provider fallback больше не повторяет JSON-запрос без `response_format` при фатальных ошибках ключа, лимита или доступа.
+- Добавлены тесты на override `.env`, фатальные ошибки OpenRouter и остановку candidate run при исчерпанном ключе.
+
+### Для чего это нужно
+
+- Новый ключ, записанный в `.env`, теперь действительно используется даже если в текущем PowerShell осталась старая переменная `OPENROUTER_API_KEY`.
+- При исчерпанном лимите ключа CLI не тратит время и не засоряет replay buffer одинаковыми ошибками.
+
+### Почему это сделано именно так
+
+- Для локальной разработки `.env` должен быть источником правды, потому что пользователь редактирует именно его после `init-env`.
+- `401/402/403` обычно означают проблему авторизации, оплаты, лимита или доступа, поэтому продолжать тесты бессмысленно.
+
+### Затронутые файлы
+
+- `prompt_evolve/config.py`
+- `prompt_evolve/providers.py`
+- `prompt_evolve/evaluator.py`
+- `prompt_evolve/prompts.py`
+- `prompt_evolve/testcases.py`
+- `prompt_evolve/scope.py`
+- `prompt_evolve/clarify.py`
+- `prompt_evolve/inspo.py`
+- `tests/unit/test_config.py`
+- `tests/unit/test_providers_llm.py`
+- `tests/unit/test_prompts_evaluator_scope_metrics.py`
+- `tests/integration/test_cli.py`
+- `CHANGELOG.md`
+
+### Тесты
+
+- `python -m pytest`
+- `python -m pytest --cov=prompt_evolve --cov-report=term-missing`
+
+### Риски
+
+- Если пользователь специально задавал другой ключ в shell, значение из `.env` теперь будет иметь приоритет.
+
+## 2026-05-22 — Commit: pending
+
+### Что изменено
+
 - OpenRouter provider теперь мапит `reasoning: "max"` в допустимое для OpenRouter значение `xhigh`.
 - Ошибки OpenRouter теперь включают безопасное сообщение из JSON-ответа API вместо общего `400 Bad Request`.
 - JSON-запросы через OpenRouter автоматически повторяются без `response_format`, если модель не поддерживает structured output.

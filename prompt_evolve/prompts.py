@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .llm import generate_text
 from .models import LLMProvider, PromptCandidate, PromptRunResult
+from .providers import FatalProviderError
 
 
 PROMPT_ENGINEERING_TECHNIQUES = """
@@ -129,6 +130,8 @@ def generate_prompt_candidates(
         ]
         try:
             content = generate_text(provider, messages, model=model, reasoning=reasoning)
+        except FatalProviderError:
+            raise
         except Exception:
             content = build_seed_prompt(task)
         candidates.append(

@@ -14,6 +14,7 @@ from prompt_evolve.metrics import (
 from prompt_evolve.models import EvaluationResult, PromptCandidate, PromptRunResult, TestCase
 from prompt_evolve.prompts import build_seed_prompt, generate_prompt_candidates, select_best_prompt
 from prompt_evolve.providers import MockProvider
+from prompt_evolve.providers import FatalProviderError
 from prompt_evolve.scope import (
     analyze_failures,
     dedupe_guidelines,
@@ -76,6 +77,17 @@ def test_evaluate_response_and_run_candidate():
     assert evaluation.passed is True
     run = run_candidate(PromptCandidate("p1", "Prompt"), [case()], provider)
     assert run.evaluations[0].test_case_id == "TC-001"
+
+
+def test_run_candidate_stops_on_fatal_provider_error():
+    class FatalProvider(MockProvider):
+        def generate(self, messages, *, model=None, reasoning=None, response_format=None):
+            raise FatalProviderError("Key limit exceeded")
+
+    import pytest
+
+    with pytest.raises(FatalProviderError):
+        run_candidate(PromptCandidate("p1", "Prompt"), [case(), case("TC-002")], FatalProvider())
 
 
 def test_self_check_evaluation_marks_low_score_failed():

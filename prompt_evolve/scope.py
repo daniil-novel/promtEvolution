@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .llm import generate_json
 from .models import EvaluationResult, LLMProvider, PromptRunResult
+from .providers import FatalProviderError
 
 
 def analyze_failures(result: PromptRunResult) -> list[EvaluationResult]:
@@ -34,6 +35,8 @@ def generate_guidelines(
     ]
     try:
         data = generate_json(provider, messages, model=model, reasoning=reasoning)
+    except FatalProviderError:
+        raise
     except Exception:
         data = {
             "corrective": ["Validate the final answer against every evaluation criterion."],

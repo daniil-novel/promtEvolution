@@ -104,7 +104,7 @@ def default_config_dict() -> dict[str, Any]:
     }
 
 
-def load_dotenv(path: str | Path = ".env") -> None:
+def load_dotenv(path: str | Path = ".env", *, override: bool = True) -> None:
     env_path = Path(path)
     if not env_path.exists():
         return
@@ -115,7 +115,7 @@ def load_dotenv(path: str | Path = ".env") -> None:
         key, value = line.split("=", 1)
         key = key.strip()
         value = value.strip().strip('"').strip("'")
-        if key and key not in os.environ:
+        if key and (override or key not in os.environ):
             os.environ[key] = value
 
 

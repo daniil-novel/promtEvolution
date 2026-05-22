@@ -6,6 +6,7 @@ import pytest
 from prompt_evolve.config import AppConfig, ConfigError
 from prompt_evolve.llm import LLMJsonError, generate_json, parse_json_response
 from prompt_evolve.providers import (
+    FatalProviderError,
     GigaChatProvider,
     MockProvider,
     OpenRouterProvider,
@@ -126,6 +127,27 @@ def test_openrouter_json_response_format_retries_without_structured_output(monke
     assert response.content == "{\"ok\": true}"
     assert len(calls) == 2
     assert "response_format" not in calls[1]
+
+
+def test_openrouter_fatal_errors_do_not_retry_json_fallback(monkeypatch):
+    monkeypatch.setenv("OPENROUTER_API_KEY", "secret")
+    calls = 0
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        return httpx.Response(
+            403,
+            json={"error": {"code": 403, "message": "Key limit exceeded"}},
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    with pytest.raises(FatalProviderError, match="Key limit exceeded"):
+        OpenRouterProvider(client=client).generate(
+            [{"role": "user", "content": "Return JSON"}],
+            response_format="json",
+        )
+    assert calls == 1
 
 
 def test_gigachat_generate_with_mock_http(monkeypatch):

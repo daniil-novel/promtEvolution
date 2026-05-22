@@ -17,6 +17,10 @@ class ProviderError(RuntimeError):
     """Raised when provider communication fails."""
 
 
+class FatalProviderError(ProviderError):
+    """Raised for provider errors that should stop the whole run."""
+
+
 OPENROUTER_REASONING_ALIASES = {
     "max": "xhigh",
     "maximum": "xhigh",
@@ -89,7 +93,8 @@ class OpenRouterProvider:
             )
             if response.status_code >= 400:
                 detail = _safe_error_message(response)
-                raise ProviderError(
+                error_cls = FatalProviderError if response.status_code in {401, 402, 403} else ProviderError
+                raise error_cls(
                     f"OpenRouter request failed with HTTP {response.status_code}: {detail}"
                 )
             return response.json()
@@ -118,6 +123,8 @@ class OpenRouterProvider:
             payload["response_format"] = {"type": "json_object"}
         try:
             data = self._post_chat_completion(payload)
+        except FatalProviderError:
+            raise
         except ProviderError:
             if response_format != "json" or "response_format" not in payload:
                 raise

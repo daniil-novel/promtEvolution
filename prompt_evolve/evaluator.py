@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .llm import generate_json, generate_text
 from .models import EvaluationResult, LLMProvider, PromptCandidate, PromptRunResult, TestCase
+from .providers import FatalProviderError
 
 
 def evaluate_response(
@@ -78,6 +79,8 @@ def run_candidate(
             response_text = answer.content
             for key, value in answer.usage.items():
                 usage[key] = usage.get(key, 0) + value
+        except FatalProviderError:
+            raise
         except Exception as exc:
             response_text = f"Provider error: {exc}"
         responses[case.id] = response_text
